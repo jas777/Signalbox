@@ -1,0 +1,49 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "signalbox:db_shunt_signal_ground_old",
+    "textures": {
+      "lamp_white": "blocks/concrete_black",
+      "lamp_red": "signalbox:blocks/red"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "south": {"y": 180},
+      "east":  {"y": 90},
+      "west":  {"y": -90}
+    },
+    "active": {
+      "true": {},
+      "false": {
+        "textures": {
+          "lamp_white": "blocks/concrete_black",
+          "lamp_red": "blocks/concrete_black"
+        }
+      }
+    },
+    "signal_variant": {
+      "0": {
+        "textures": {
+          "lamp_white": "blocks/concrete_black",
+          "lamp_red": "signalbox:blocks/red"
+        }
+      },
+      "1": {
+        "textures": {
+          "lamp_white": "signalbox:blocks/white",
+          "lamp_red": "blocks/concrete_black"
+        }
+      },
+      "2": {
+        "textures": {
+          "lamp_white": "signalbox:blocks/white",
+          "lamp_red": "signalbox:blocks/red"
+        }
+      },
+      "3": {}
+    },
+    "inventory": [{}]
+  }
+}

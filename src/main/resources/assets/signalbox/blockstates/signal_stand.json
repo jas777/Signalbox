@@ -1,0 +1,25 @@
+{
+  "variants": {
+    "normal": {
+      "model": "signalbox:signal_stand"
+    },
+    "facing=north": {
+      "model": "signalbox:signal_stand"
+    },
+    "facing=south": {
+      "model": "signalbox:signal_stand",
+      "y": 180,
+      "uvlock": true
+    },
+    "facing=east": {
+      "model": "signalbox:signal_stand",
+      "y": 90,
+      "uvlock": true
+    },
+    "facing=west": {
+      "model": "signalbox:signal_stand",
+      "y": 270,
+      "uvlock": true
+    }
+  }
+}

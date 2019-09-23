@@ -1,0 +1,20 @@
+[
+  {
+    "modid": "signalbox",
+    "name": "Signalbox",
+    "description": "Mod that adds train signals to Minecraft.",
+    "version": "${version}",
+    "mcversion": "${mcversion}",
+    "url": "",
+    "updateUrl": "",
+    "authorList": [
+      "jas777",
+      "thekerbal",
+      "Skyman_Luna"
+    ],
+    "credits": "",
+    "logoFile": "",
+    "screenshots": [],
+    "dependencies": []
+  }
+]
