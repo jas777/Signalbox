@@ -1,4 +1,4 @@
-package com.jas777.signalbox.blocks.db.ksmehrfachssignal;
+package com.jas777.signalbox.blocks.db.vorsignal;
 
 import com.jas777.signalbox.blocks.BaseDisplay;
 import net.minecraft.block.material.Material;
@@ -11,21 +11,21 @@ import net.minecraft.world.IBlockAccess;
 
 import javax.annotation.Nullable;
 
-public class BlockKsMehrfachssignalZs3 extends BaseDisplay {
+public class BlockVorsignalZs3v extends BaseDisplay {
 
     private static final AxisAlignedBB BOUNDING_BOX = new AxisAlignedBB(1 * 0.0625, 0, 2 * 0.0625, 13 * 0.0625, 16 * 0.0625, 13 * 0.0625);
 
-    public BlockKsMehrfachssignalZs3() {
-        super("db_ks_mehrfachssignal_zs3", Material.IRON);
+    public BlockVorsignalZs3v() {
+        super("db_vorsignal_zs3v", Material.IRON);
         this.setDefaultState(this.getDefaultState().withProperty(ACTIVE, Boolean.FALSE));
 
         this.displayX1 = 5 * 0.0625;
         this.displayX2 = 11 * 0.0625;
 
-        this.displayY1 = 2 * 0.0625;
-        this.displayY2 = 9 * 0.0625;
+        this.displayY1 = 7 * 0.0625;
+        this.displayY2 = 14 * 0.0625;
 
-        this.displayZ = 2 * 0.0625;
+        this.displayZ = 7 * 0.0625;
 
     }
 
@@ -59,4 +59,5 @@ public class BlockKsMehrfachssignalZs3 extends BaseDisplay {
     public AxisAlignedBB getCollisionBoundingBox(IBlockState blockState, IBlockAccess worldIn, BlockPos pos) {
         return BOUNDING_BOX;
     }
+
 }

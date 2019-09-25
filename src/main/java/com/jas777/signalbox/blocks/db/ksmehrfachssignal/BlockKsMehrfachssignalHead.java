@@ -22,7 +22,7 @@ public class BlockKsMehrfachssignalHead extends BaseSignal implements HasVariant
 
     public BlockKsMehrfachssignalHead() {
         super("db_ks_mehrfachssignal_head", Material.IRON);
-        this.setDefaultState(this.getDefaultState().withProperty(ACTIVE, Boolean.TRUE).withProperty(SIGNAL_VARIANT, 0));
+        this.setDefaultState(this.getDefaultState().withProperty(ACTIVE, Boolean.FALSE).withProperty(SIGNAL_VARIANT, 0));
     }
 
     @Override
@@ -38,8 +38,8 @@ public class BlockKsMehrfachssignalHead extends BaseSignal implements HasVariant
     @Override
     public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
         SignalTileEntity tileEntity = (SignalTileEntity) worldIn.getTileEntity(pos);
-        state = state.withProperty(SIGNAL_VARIANT, tileEntity.getSignalVariant());
-        return super.getActualState(state, worldIn, pos);
+        if (tileEntity == null) return state.getBlock().getDefaultState();
+        return state.withProperty(SIGNAL_VARIANT, tileEntity.getSignalVariant());
     }
 
     @Override

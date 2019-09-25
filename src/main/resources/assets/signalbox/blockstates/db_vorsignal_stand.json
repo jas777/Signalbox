@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "signalbox:db_kompaktvorsignal_frame"
+    "model": "signalbox:db_vorsignal_stand"
   },
   "variants": {
     "facing": {

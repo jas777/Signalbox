@@ -1,4 +1,4 @@
-package com.jas777.signalbox.blocks.db.kompaktvorsignal;
+package com.jas777.signalbox.blocks.db.vorsignal;
 
 import com.jas777.signalbox.blocks.BaseBlock;
 import net.minecraft.block.material.Material;
@@ -6,25 +6,22 @@ import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 
-public class BlockKompaktvorsignalPlate extends BaseBlock {
+public class BlockVorsignalStand extends BaseBlock {
 
     private static final AxisAlignedBB BOUNDING_BOX = new AxisAlignedBB(2 * 0.0625, 0, 2 * 0.0625, 14 * 0.0625, 1, 14 * 0.0625);
 
     public static final PropertyDirection FACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
 
-    public BlockKompaktvorsignalPlate() {
-        super("db_kompaktvorsignal_plate", Material.IRON);
+    public BlockVorsignalStand() {
+        super("db_vorsignal_stand", Material.IRON);
     }
 
     @Override

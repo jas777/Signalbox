@@ -2,7 +2,6 @@ package com.jas777.signalbox.blocks;
 
 import com.jas777.signalbox.tileentity.DisplayTileEntity;
 import net.minecraft.block.Block;
-import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyBool;
@@ -20,7 +19,7 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 
-public class BaseDisplay extends BaseBlock implements ITileEntityProvider {
+public class BaseDisplay extends BaseBlock {
 
     public static final PropertyDirection FACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
     public static final PropertyBool ACTIVE = PropertyBool.create("active");
@@ -119,7 +118,7 @@ public class BaseDisplay extends BaseBlock implements ITileEntityProvider {
 
     @Nullable
     @Override
-    public TileEntity createNewTileEntity(World worldIn, int meta) {
+    public TileEntity createTileEntity(World world, IBlockState state) {
         return new DisplayTileEntity();
     }
 

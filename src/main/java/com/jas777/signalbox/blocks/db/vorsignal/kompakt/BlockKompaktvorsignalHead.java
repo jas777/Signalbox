@@ -1,4 +1,4 @@
-package com.jas777.signalbox.blocks.db;
+package com.jas777.signalbox.blocks.db.vorsignal.kompakt;
 
 import com.jas777.signalbox.blocks.BaseSignal;
 import com.jas777.signalbox.tileentity.SignalTileEntity;
@@ -14,15 +14,27 @@ import net.minecraft.world.IBlockAccess;
 
 import javax.annotation.Nullable;
 
-public class BlockShuntSignalGroundOld extends BaseSignal implements HasVariant {
+public class BlockKompaktvorsignalHead extends BaseSignal implements HasVariant {
 
-    private static final AxisAlignedBB BOUNDING_BOX = new AxisAlignedBB(1 * 0.0625, 0, 4 * 0.0625, 15 * 0.0625, 15 * 0.0625, 12 * 0.0625);
+    private static final AxisAlignedBB BOUNDING_BOX = new AxisAlignedBB(1 * 0.0625, 0, 2 * 0.0625, 13 * 0.0625, 16 * 0.0625, 13 * 0.0625);
 
     public static final PropertyInteger SIGNAL_VARIANT = PropertyInteger.create("signal_variant", 0, 3);
 
-    public BlockShuntSignalGroundOld() {
-        super("db_shunt_signal_ground_old", Material.IRON);
+    public BlockKompaktvorsignalHead() {
+        super("db_kompaktvorsignal_head", Material.IRON);
         this.setDefaultState(this.getDefaultState().withProperty(ACTIVE, Boolean.FALSE).withProperty(SIGNAL_VARIANT, 0));
+    }
+
+    @Override
+    protected BlockStateContainer createBlockState() {
+        return new BlockStateContainer(this, new IProperty[]{FACING, ACTIVE, SIGNAL_VARIANT});
+    }
+
+    @Override
+    public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
+        SignalTileEntity tileEntity = (SignalTileEntity) worldIn.getTileEntity(pos);
+        state = state.withProperty(SIGNAL_VARIANT, tileEntity.getSignalVariant());
+        return super.getActualState(state, worldIn, pos);
     }
 
     @Override
@@ -38,18 +50,6 @@ public class BlockShuntSignalGroundOld extends BaseSignal implements HasVariant 
     @Override
     public boolean isFullCube(IBlockState state) {
         return false;
-    }
-
-    @Override
-    protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, new IProperty[]{FACING, ACTIVE, SIGNAL_VARIANT});
-    }
-
-    @Override
-    public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos) {
-        SignalTileEntity tileEntity = (SignalTileEntity) worldIn.getTileEntity(pos);
-        state = state.withProperty(SIGNAL_VARIANT, tileEntity.getSignalVariant());
-        return super.getActualState(state, worldIn, pos);
     }
 
     @Nullable

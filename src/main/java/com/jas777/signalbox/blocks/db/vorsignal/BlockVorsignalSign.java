@@ -1,4 +1,4 @@
-package com.jas777.signalbox.blocks.db.kompaktvorsignal;
+package com.jas777.signalbox.blocks.db.vorsignal;
 
 import com.jas777.signalbox.blocks.BaseBlock;
 import net.minecraft.block.material.Material;
@@ -14,14 +14,14 @@ import net.minecraft.world.IBlockAccess;
 
 import javax.annotation.Nullable;
 
-public class BlockKompaktvorsignalPole extends BaseBlock {
+public class BlockVorsignalSign extends BaseBlock {
 
     private static final AxisAlignedBB BOUNDING_BOX = new AxisAlignedBB(2 * 0.0625, 0, 2 * 0.0625, 14 * 0.0625, 1, 14 * 0.0625);
 
     public static final PropertyDirection FACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
 
-    public BlockKompaktvorsignalPole() {
-        super("db_kompaktvorsignal_pole", Material.IRON);
+    public BlockVorsignalSign() {
+        super("db_vorsignal_sign", Material.IRON);
     }
 
     @Override

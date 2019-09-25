@@ -1,7 +1,7 @@
 {
   "forge_marker": 1,
   "defaults": {
-    "model": "signalbox:db_kompaktvorsignal_stand"
+    "model": "signalbox:db_vorsignal_zs3v"
   },
   "variants": {
     "facing": {
@@ -9,6 +9,10 @@
       "south": {"y": 180},
       "east":  {"y": 90},
       "west":  {"y": -90}
+    },
+    "active": {
+      "true": {},
+      "false": {}
     },
     "inventory": [{}]
   }

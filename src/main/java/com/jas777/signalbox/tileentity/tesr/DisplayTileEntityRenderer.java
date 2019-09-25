@@ -19,13 +19,13 @@ public class DisplayTileEntityRenderer extends TileEntitySpecialRenderer<Display
         float displayMiddleHorizontal = (float) (display.getDisplayX1() + (display.getDisplayX2() - display.getDisplayX1()) / 2);
         float displayMiddleVertical = (float) (display.getDisplayY1() + (display.getDisplayY2() - display.getDisplayY1()) / 2);
 
-        GlStateManager.translate(x, y, z);
+        GlStateManager.translate(x + 0.5, y + 0.5, z + 0.5);
 
         EnumFacing facing = EnumFacing.getFront(5 - (te.getBlockMetadata() & 3));
         float f1 = facing.getHorizontalAngle();
         GlStateManager.rotate(-f1, 0.0F, 1.0F, 0.0F);
 
-        GlStateManager.translate(-displayMiddleHorizontal, displayMiddleVertical, -display.getDisplayZ());
+        GlStateManager.translate(displayMiddleHorizontal - 0.5F, displayMiddleVertical - 0.5F, (0.5F - display.getDisplayZ()) + 0.01);
 
         GlStateManager.enableRescaleNormal();
 

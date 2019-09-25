@@ -1,4 +1,4 @@
-package com.jas777.signalbox.blocks.db.kompaktvorsignal;
+package com.jas777.signalbox.blocks.db.vorsignal.hv;
 
 import com.jas777.signalbox.blocks.BaseSignal;
 import com.jas777.signalbox.tileentity.SignalTileEntity;
@@ -14,15 +14,15 @@ import net.minecraft.world.IBlockAccess;
 
 import javax.annotation.Nullable;
 
-public class BlockKompaktvorsignalHead extends BaseSignal implements HasVariant {
+public class BlockHvVorsignalHead extends BaseSignal implements HasVariant {
 
     private static final AxisAlignedBB BOUNDING_BOX = new AxisAlignedBB(1 * 0.0625, 0, 2 * 0.0625, 13 * 0.0625, 16 * 0.0625, 13 * 0.0625);
 
     public static final PropertyInteger SIGNAL_VARIANT = PropertyInteger.create("signal_variant", 0, 3);
 
-    public BlockKompaktvorsignalHead() {
-        super("db_kompaktvorsignal_head", Material.IRON);
-        this.setDefaultState(this.getDefaultState().withProperty(ACTIVE, Boolean.TRUE).withProperty(SIGNAL_VARIANT, 0));
+    public BlockHvVorsignalHead() {
+        super("db_hv_vorsignal_head", Material.IRON);
+        this.setDefaultState(this.getDefaultState().withProperty(ACTIVE, Boolean.FALSE).withProperty(SIGNAL_VARIANT, 0));
     }
 
     @Override
