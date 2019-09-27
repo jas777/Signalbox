@@ -123,7 +123,7 @@ public class BaseDisplay extends BaseBlock {
     }
 
     @Override
-    public boolean hasTileEntity() {
+    public boolean hasTileEntity(IBlockState state) {
         return true;
     }
 

@@ -1,8 +1,8 @@
 package com.jas777.signalbox.tileentity;
 
-import com.jas777.signalbox.blocks.BaseSignal;
+import com.jas777.signalbox.Signalbox;
+import com.jas777.signalbox.channel.Channel;
 import com.jas777.signalbox.util.HasVariant;
-import net.minecraft.block.properties.PropertyInteger;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -15,18 +15,27 @@ import java.util.Collections;
 
 public class SignalTileEntity extends TileEntity {
 
+    private int channel = 0;
+    private int id = 0;
     private int signalVariant = 0;
 
     @Override
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
         signalVariant = compound.getInteger("signal_variant");
+        channel = compound.getInteger("channel");
+        id = compound.getInteger("signal_id");
+
+        setId(id);
+        setChannel(channel);
     }
 
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound compound) {
         super.writeToNBT(compound);
         compound.setInteger("signal_variant", signalVariant);
+        compound.setInteger("channel", channel);
+        compound.setInteger("signal_id", id);
         return compound;
     }
 
@@ -76,5 +85,57 @@ public class SignalTileEntity extends TileEntity {
     public void updateBlock() {
         HasVariant sVariant = (HasVariant) world.getBlockState(pos).getBlock();
         world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos).withProperty(sVariant.getSignalVariant(), signalVariant), 2);
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public int getChannel() {
+        return channel;
+    }
+
+    public void setId(int id) {
+
+        Channel dispatchChannel = Signalbox.instance.getChannelDispatcher().getChannels().get(channel);
+
+        if (dispatchChannel == null) {
+            Signalbox.instance.getChannelDispatcher().getChannels().put(channel, new Channel());
+            Channel newChannel = Signalbox.instance.getChannelDispatcher().getChannels().get(channel);
+            newChannel.getSignals().put(id, pos);
+        } else {
+            if (dispatchChannel.getSignals().containsKey(this.id)) {
+                dispatchChannel.getSignals().remove(pos);
+                dispatchChannel.getSignals().put(id, pos);
+            } else {
+                dispatchChannel.getSignals().put(id, pos);
+            }
+        }
+
+        this.id = id;
+    }
+
+    public void setChannel(int channel) {
+
+        Channel dispatchChannel = Signalbox.instance.getChannelDispatcher().getChannels().get(this.channel);
+
+        if (dispatchChannel == null) {
+            Signalbox.instance.getChannelDispatcher().getChannels().put(channel, new Channel());
+            Channel newChannel = Signalbox.instance.getChannelDispatcher().getChannels().get(channel);
+            newChannel.getSignals().put(id, pos);
+        } else {
+            if (Signalbox.instance.getChannelDispatcher().getChannels().get(channel) == null) {
+                Signalbox.instance.getChannelDispatcher().getChannels().put(channel, new Channel());
+                Channel newChannel = Signalbox.instance.getChannelDispatcher().getChannels().get(channel);
+                newChannel.getSignals().put(id, pos);
+            } else {
+                dispatchChannel.getSignals().remove(pos);
+                Signalbox.instance.getChannelDispatcher().getChannels().put(channel, new Channel());
+                Channel newChannel = Signalbox.instance.getChannelDispatcher().getChannels().get(channel);
+                newChannel.getSignals().put(id, pos);
+            }
+        }
+
+        this.channel = channel;
     }
 }

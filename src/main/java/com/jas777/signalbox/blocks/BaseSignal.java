@@ -1,11 +1,13 @@
 package com.jas777.signalbox.blocks;
 
+import com.jas777.signalbox.gui.GuiSignal;
 import com.jas777.signalbox.tileentity.SignalTileEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyDirection;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
@@ -102,7 +104,7 @@ public class BaseSignal extends BaseBlock {
     }
 
     @Override
-    public boolean hasTileEntity() {
+    public boolean hasTileEntity(IBlockState state) {
         return true;
     }
 
@@ -119,8 +121,9 @@ public class BaseSignal extends BaseBlock {
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if ((worldIn.getBlockState(pos).getBlock() instanceof BaseSignal) && hand.equals(EnumHand.MAIN_HAND)) {
-            SignalTileEntity tileEntity = (SignalTileEntity) worldIn.getTileEntity(pos);
-            tileEntity.cycleSignalVariant();
+            if (worldIn.isRemote) {
+                Minecraft.getMinecraft().displayGuiScreen(new GuiSignal(pos));
+            }
         }
         return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
     }

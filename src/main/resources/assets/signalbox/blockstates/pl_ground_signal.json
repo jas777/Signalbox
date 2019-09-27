@@ -1,0 +1,42 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "signalbox:pl_ground_signal",
+    "textures": {
+      "lamp_white": "blocks/concrete_blue",
+      "lamp_blue": "blocks/concrete_black"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "south": {
+        "y": 180
+      },
+      "east": {
+        "y": 90
+      },
+      "west": {
+        "y": -90
+      }
+    },
+    "active": {
+      "true": {
+        "textures": {
+          "lamp_white": "blocks/concrete_blue",
+          "lamp_blue": "blocks/concrete_black"
+        }
+      },
+      "false": {}
+    },
+    "signal_variant": {
+      "0": {},
+      "1": {},
+      "2": {},
+      "3": {}
+    },
+    "inventory": [
+      {}
+    ]
+  }
+}

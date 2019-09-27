@@ -1,5 +1,6 @@
 package com.jas777.signalbox;
 
+import com.jas777.signalbox.channel.ChannelDispatcher;
 import com.jas777.signalbox.network.packet.PacketRequestUpdateDisplay;
 import com.jas777.signalbox.network.packet.PacketUpdateDisplay;
 import com.jas777.signalbox.proxy.CommonProxy;
@@ -23,6 +24,8 @@ public class Signalbox {
 
     public static SimpleNetworkWrapper network;
 
+    private ChannelDispatcher channelDispatcher;
+
     public static final String MODID = "signalbox";
     public static final String NAME = "Signalbox";
     public static final String VERSION = "0.0.1";
@@ -40,6 +43,8 @@ public class Signalbox {
         network = NetworkRegistry.INSTANCE.newSimpleChannel(MODID);
         network.registerMessage(new PacketUpdateDisplay.Handler(), PacketUpdateDisplay.class, 0, Side.CLIENT);
         network.registerMessage(new PacketRequestUpdateDisplay.Handler(), PacketRequestUpdateDisplay.class, 1, Side.SERVER);
+
+        channelDispatcher = new ChannelDispatcher();
 
     }
 
@@ -61,4 +66,9 @@ public class Signalbox {
         }
 
     }.setBackgroundImageName("item_search.png");
+
+    public ChannelDispatcher getChannelDispatcher() {
+        return channelDispatcher;
+    }
+
 }
