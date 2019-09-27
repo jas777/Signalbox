@@ -86,13 +86,15 @@ public class BlockController extends BaseBlock {
     public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state) {
         if (!worldIn.isRemote) {
             if (worldIn.isBlockPowered(pos)) {
-                worldIn.setBlockState(pos, state.withProperty(ACTIVE, Boolean.TRUE), 2);
+                ControllerTileEntity tileEntity = (ControllerTileEntity) worldIn.getTileEntity(pos);
+                tileEntity.setActive(true);
+                worldIn.setBlockState(pos, state.withProperty(ACTIVE, Boolean.FALSE), 2);
             } else {
+                ControllerTileEntity tileEntity = (ControllerTileEntity) worldIn.getTileEntity(pos);
+                tileEntity.setActive(true);
                 worldIn.setBlockState(pos, state.withProperty(ACTIVE, Boolean.FALSE), 2);
             }
         }
-        ControllerTileEntity tileEntity = (ControllerTileEntity) worldIn.getTileEntity(pos);
-        tileEntity.update();
     }
 
     @Override
@@ -104,13 +106,15 @@ public class BlockController extends BaseBlock {
     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
         if (!worldIn.isRemote) {
             if (worldIn.isBlockPowered(pos)) {
-                worldIn.setBlockState(pos, state.withProperty(ACTIVE, Boolean.TRUE), 2);
+                ControllerTileEntity tileEntity = (ControllerTileEntity) worldIn.getTileEntity(pos);
+                tileEntity.setActive(true);
+                worldIn.setBlockState(pos, state.withProperty(ACTIVE, Boolean.FALSE), 2);
             } else {
+                ControllerTileEntity tileEntity = (ControllerTileEntity) worldIn.getTileEntity(pos);
+                tileEntity.setActive(true);
                 worldIn.setBlockState(pos, state.withProperty(ACTIVE, Boolean.FALSE), 2);
             }
         }
-        ControllerTileEntity tileEntity = (ControllerTileEntity) worldIn.getTileEntity(pos);
-        tileEntity.update();
     }
 
     @Override

@@ -89,6 +89,15 @@ public class GuiSignal extends GuiScreen {
     }
 
     @Override
+    public void onGuiClosed() {
+        SignalTileEntity tileEntity = (SignalTileEntity) mc.world.getTileEntity(pos);
+
+        tileEntity.setChannel(Integer.parseInt(channelTextField.getText()));
+        tileEntity.setId(Integer.parseInt(idTextField.getText()));
+        super.onGuiClosed();
+    }
+
+    @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
 
         channelTextField.textboxKeyTyped(typedChar, keyCode);

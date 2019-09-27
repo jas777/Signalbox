@@ -167,6 +167,15 @@ public class GuiController extends GuiScreen {
     }
 
     @Override
+    public void onGuiClosed() {
+        ControllerTileEntity tileEntity = (ControllerTileEntity) mc.world.getTileEntity(pos);
+
+//        tileEntity.setChannel(Integer.parseInt(channelTextField.getText()));
+//        tileEntity.setId(Integer.parseInt(idTextField.getText()));
+        super.onGuiClosed();
+    }
+
+    @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
 
         channelTextField.textboxKeyTyped(typedChar, keyCode);

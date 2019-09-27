@@ -2,6 +2,8 @@ package com.jas777.signalbox.tileentity;
 
 import com.jas777.signalbox.Signalbox;
 import com.jas777.signalbox.channel.Channel;
+import com.jas777.signalbox.network.packet.PacketRequestUpdateSignal;
+import com.jas777.signalbox.network.packet.PacketUpdateSignal;
 import com.jas777.signalbox.util.HasVariant;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
@@ -10,6 +12,7 @@ import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 import java.util.Collections;
 
@@ -45,6 +48,13 @@ public class SignalTileEntity extends TileEntity {
     }
 
     @Override
+    public void onLoad() {
+        if (world.isRemote) {
+            Signalbox.network.sendToServer(new PacketRequestUpdateSignal(this));
+        }
+    }
+
+    @Override
     public SPacketUpdateTileEntity getUpdatePacket() {
         NBTTagCompound nbtTag = new NBTTagCompound();
         this.writeToNBT(nbtTag);
@@ -57,6 +67,9 @@ public class SignalTileEntity extends TileEntity {
         this.readFromNBT(packet.getNbtCompound());
         HasVariant sVariant = (HasVariant) world.getBlockState(pos).getBlock();
         world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos).withProperty(sVariant.getSignalVariant(), signalVariant), 2);
+        if (!world.isRemote) {
+            Signalbox.network.sendToAllAround(new PacketUpdateSignal(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
+        }
     }
 
     @Override
@@ -85,6 +98,9 @@ public class SignalTileEntity extends TileEntity {
     public void updateBlock() {
         HasVariant sVariant = (HasVariant) world.getBlockState(pos).getBlock();
         world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos).withProperty(sVariant.getSignalVariant(), signalVariant), 2);
+        if (!world.isRemote) {
+            Signalbox.network.sendToAllAround(new PacketUpdateSignal(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
+        }
     }
 
     public int getId() {
@@ -113,6 +129,11 @@ public class SignalTileEntity extends TileEntity {
         }
 
         this.id = id;
+
+        if (!world.isRemote) {
+            Signalbox.network.sendToAllAround(new PacketUpdateSignal(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
+        }
+
     }
 
     public void setChannel(int channel) {
@@ -137,5 +158,10 @@ public class SignalTileEntity extends TileEntity {
         }
 
         this.channel = channel;
+
+        if (!world.isRemote) {
+            Signalbox.network.sendToAllAround(new PacketUpdateSignal(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
+        }
+
     }
 }

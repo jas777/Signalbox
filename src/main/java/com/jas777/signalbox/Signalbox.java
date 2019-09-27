@@ -1,8 +1,7 @@
 package com.jas777.signalbox;
 
 import com.jas777.signalbox.channel.ChannelDispatcher;
-import com.jas777.signalbox.network.packet.PacketRequestUpdateDisplay;
-import com.jas777.signalbox.network.packet.PacketUpdateDisplay;
+import com.jas777.signalbox.network.packet.*;
 import com.jas777.signalbox.proxy.CommonProxy;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
@@ -41,8 +40,15 @@ public class Signalbox {
         logger = event.getModLog();
 
         network = NetworkRegistry.INSTANCE.newSimpleChannel(MODID);
+
         network.registerMessage(new PacketUpdateDisplay.Handler(), PacketUpdateDisplay.class, 0, Side.CLIENT);
         network.registerMessage(new PacketRequestUpdateDisplay.Handler(), PacketRequestUpdateDisplay.class, 1, Side.SERVER);
+
+        network.registerMessage(new PacketUpdateController.Handler(), PacketUpdateController.class, 2, Side.CLIENT);
+        network.registerMessage(new PacketRequestUpdateController.Handler(), PacketRequestUpdateController.class, 3, Side.SERVER);
+
+        network.registerMessage(new PacketUpdateSignal.Handler(), PacketUpdateSignal.class, 4, Side.CLIENT);
+        network.registerMessage(new PacketRequestUpdateSignal.Handler(), PacketRequestUpdateSignal.class, 5, Side.SERVER);
 
         channelDispatcher = new ChannelDispatcher();
 
