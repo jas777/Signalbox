@@ -1,6 +1,8 @@
 package com.jas777.signalbox.gui;
 
 import com.jas777.signalbox.Signalbox;
+import com.jas777.signalbox.network.signalpacket.PacketDispatcher;
+import com.jas777.signalbox.network.signalpacket.PacketGuiReturn;
 import com.jas777.signalbox.tileentity.ControllerTileEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -15,7 +17,7 @@ import java.io.IOException;
 
 public class GuiController extends GuiScreen {
 
-    private BlockPos pos;
+    private ControllerTileEntity tile;
 
     private GuiButton buttonVariantOnPlus;
     private GuiButton buttonVariantOnMinus;
@@ -42,8 +44,8 @@ public class GuiController extends GuiScreen {
     private int variantOnStringLength;
     private int variantOffStringLength;
 
-    public GuiController(BlockPos pos) {
-        this.pos = pos;
+    public GuiController(ControllerTileEntity tile) {
+        this.tile = tile;
     }
 
     @Override
@@ -66,11 +68,10 @@ public class GuiController extends GuiScreen {
         GlStateManager.pushMatrix();
         {
 
-            ControllerTileEntity tileEntity = (ControllerTileEntity) mc.world.getTileEntity(pos);
-            if (tileEntity == null) mc.displayGuiScreen(null);
+            if (tile == null) mc.displayGuiScreen(null);
 
-            fontRenderer.drawString("Signal variant [ON]:" + tileEntity.getVariantOn(), centerX + 5, centerY + 30, 0x000000);
-            fontRenderer.drawString("Signal variant [OFF]:" + tileEntity.getVariantOff(), centerX + 5, centerY + 60, 0x000000);
+            fontRenderer.drawString("Signal variant [ON]:" + tile.getVariantOn(), centerX + 5, centerY + 30, 0x000000);
+            fontRenderer.drawString("Signal variant [OFF]:" + tile.getVariantOff(), centerX + 5, centerY + 60, 0x000000);
 
             buttonVariantOnPlus.drawButton(mc, mouseX, mouseY, partialTicks);
             buttonVariantOnMinus.drawButton(mc, mouseX, mouseY, partialTicks);
@@ -91,15 +92,13 @@ public class GuiController extends GuiScreen {
     @Override
     public void initGui() {
 
-        ControllerTileEntity tileEntity = (ControllerTileEntity) mc.world.getTileEntity(pos);
-
         int centerX = (width / 2) - guiWidth / 2;
         int centerY = (height / 2) - guiHeight / 2;
 
-        if (tileEntity == null) mc.displayGuiScreen(null);
+        if (tile == null) mc.displayGuiScreen(null);
 
-        variantOnStringLength = fontRenderer.getStringWidth("Signal variant [ON]:" + tileEntity.getVariantOn());
-        variantOffStringLength = fontRenderer.getStringWidth("Signal variant [OFF]:" + tileEntity.getVariantOff());
+        variantOnStringLength = fontRenderer.getStringWidth("Signal variant [ON]:" + tile.getVariantOn());
+        variantOffStringLength = fontRenderer.getStringWidth("Signal variant [OFF]:" + tile.getVariantOff());
 
         buttonList.clear();
 
@@ -117,8 +116,8 @@ public class GuiController extends GuiScreen {
         channelTextField.setValidator(NumberUtils::isCreatable);
         idTextField.setValidator(NumberUtils::isCreatable);
 
-        channelTextField.setText("" + tileEntity.getChannel());
-        idTextField.setText("" + tileEntity.getId());
+        channelTextField.setText("" + tile.getChannel());
+        idTextField.setText("" + tile.getId());
 
         super.initGui();
     }
@@ -126,38 +125,33 @@ public class GuiController extends GuiScreen {
     @Override
     protected void actionPerformed(GuiButton button) throws IOException {
 
-        ControllerTileEntity tileEntity = (ControllerTileEntity) mc.world.getTileEntity(pos);
-
-        int channel = Integer.parseInt(channelTextField.getText());
-        int id = Integer.parseInt(idTextField.getText());
-
         switch (button.id) {
             case BUTTON_VARIANT_ON_PLUS:
-                if (tileEntity.getVariantOn() >= tileEntity.getMaxVariant()) {
-                    tileEntity.setVariantOn(0);
+                if (tile.getVariantOn() >= tile.getMaxVariant()) {
+                    tile.setVariantOn(0);
                 } else {
-                    tileEntity.setVariantOn(tileEntity.getVariantOn() + 1);
+                    tile.setVariantOn(tile.getVariantOn() + 1);
                 }
                 break;
             case BUTTON_VARIANT_ON_MINUS:
-                if (tileEntity.getVariantOn() <= 0) {
-                    tileEntity.setVariantOn(tileEntity.getMaxVariant());
+                if (tile.getVariantOn() <= 0) {
+                    tile.setVariantOn(tile.getMaxVariant());
                 } else {
-                    tileEntity.setVariantOn(tileEntity.getVariantOn() - 1);
+                    tile.setVariantOn(tile.getVariantOn() - 1);
                 }
                 break;
             case BUTTON_VARIANT_OFF_PLUS:
-                if (tileEntity.getVariantOff() >= tileEntity.getMaxVariant()) {
-                    tileEntity.setVariantOff(0);
+                if (tile.getVariantOff() >= tile.getMaxVariant()) {
+                    tile.setVariantOff(0);
                 } else {
-                    tileEntity.setVariantOff(tileEntity.getVariantOff() + 1);
+                    tile.setVariantOff(tile.getVariantOff() + 1);
                 }
                 break;
             case BUTTON_VARIANT_OFF_MINUS:
-                if (tileEntity.getVariantOff() <= 0) {
-                    tileEntity.setVariantOff(tileEntity.getMaxVariant());
+                if (tile.getVariantOff() <= 0) {
+                    tile.setVariantOff(tile.getMaxVariant());
                 } else {
-                    tileEntity.setVariantOff(tileEntity.getVariantOff() - 1);
+                    tile.setVariantOff(tile.getVariantOff() - 1);
                 }
                 break;
 
@@ -168,11 +162,12 @@ public class GuiController extends GuiScreen {
 
     @Override
     public void onGuiClosed() {
-        ControllerTileEntity tileEntity = (ControllerTileEntity) mc.world.getTileEntity(pos);
-
-//        tileEntity.setChannel(Integer.parseInt(channelTextField.getText()));
-//        tileEntity.setId(Integer.parseInt(idTextField.getText()));
-        super.onGuiClosed();
+        if (tile.getWorld().isRemote) {
+            tile.setChannel(Integer.parseInt(channelTextField.getText()));
+            tile.setId(Integer.parseInt(idTextField.getText()));
+            PacketGuiReturn packet = new PacketGuiReturn(tile);
+            PacketDispatcher.sendToServer(packet);
+        }
     }
 
     @Override
@@ -180,8 +175,6 @@ public class GuiController extends GuiScreen {
 
         channelTextField.textboxKeyTyped(typedChar, keyCode);
         idTextField.textboxKeyTyped(typedChar, keyCode);
-
-        update();
 
         super.keyTyped(typedChar, keyCode);
     }
@@ -193,12 +186,5 @@ public class GuiController extends GuiScreen {
         idTextField.mouseClicked(mouseX, mouseY, mouseButton);
 
         super.mouseClicked(mouseX, mouseY, mouseButton);
-    }
-
-    private void update() {
-        ControllerTileEntity tileEntity = (ControllerTileEntity) mc.world.getTileEntity(pos);
-
-        tileEntity.setChannel(Integer.parseInt(channelTextField.getText()));
-        tileEntity.setId(Integer.parseInt(idTextField.getText()));
     }
 }

@@ -120,10 +120,8 @@ public class BaseSignal extends BaseBlock {
 
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-        if ((worldIn.getBlockState(pos).getBlock() instanceof BaseSignal) && hand.equals(EnumHand.MAIN_HAND)) {
-            if (worldIn.isRemote) {
-                Minecraft.getMinecraft().displayGuiScreen(new GuiSignal(pos));
-            }
+        if (worldIn.isRemote) {
+            Minecraft.getMinecraft().displayGuiScreen(new GuiSignal((SignalTileEntity) worldIn.getTileEntity(pos)));
         }
         return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
     }

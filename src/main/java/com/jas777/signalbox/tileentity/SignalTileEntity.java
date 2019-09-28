@@ -2,10 +2,14 @@ package com.jas777.signalbox.tileentity;
 
 import com.jas777.signalbox.Signalbox;
 import com.jas777.signalbox.channel.Channel;
+import com.jas777.signalbox.gui.GuiUpdateHandler;
 import com.jas777.signalbox.network.packet.PacketRequestUpdateSignal;
 import com.jas777.signalbox.network.packet.PacketUpdateSignal;
+import com.jas777.signalbox.network.signalpacket.SignalboxInputStream;
+import com.jas777.signalbox.network.signalpacket.SignalboxOutputStream;
 import com.jas777.signalbox.util.HasVariant;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
@@ -14,9 +18,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 
+import javax.annotation.Nullable;
+import java.io.IOException;
 import java.util.Collections;
 
-public class SignalTileEntity extends TileEntity {
+public class SignalTileEntity extends TileEntity implements GuiUpdateHandler {
 
     private int channel = 0;
     private int id = 0;
@@ -28,9 +34,6 @@ public class SignalTileEntity extends TileEntity {
         signalVariant = compound.getInteger("signal_variant");
         channel = compound.getInteger("channel");
         id = compound.getInteger("signal_id");
-
-        setId(id);
-        setChannel(channel);
     }
 
     @Override
@@ -163,5 +166,25 @@ public class SignalTileEntity extends TileEntity {
             Signalbox.network.sendToAllAround(new PacketUpdateSignal(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
         }
 
+    }
+
+    @Nullable
+    @Override
+    public World theWorld() {
+        return getWorld();
+    }
+
+    @Override
+    public void writeGuiData(SignalboxOutputStream data) throws IOException {
+        data.writeByte(signalVariant);
+        data.writeByte(channel);
+        data.writeByte(id);
+    }
+
+    @Override
+    public void readGuiData(SignalboxInputStream data, EntityPlayer sender) throws IOException {
+        signalVariant = data.readByte();
+        channel = data.readByte();
+        id = data.readByte();
     }
 }

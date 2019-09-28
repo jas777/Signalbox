@@ -53,11 +53,10 @@ public class BlockController extends BaseBlock {
 
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
-
         if (worldIn.isRemote) {
-            Minecraft.getMinecraft().displayGuiScreen(new GuiController(pos));
+            Minecraft.getMinecraft().displayGuiScreen(new GuiController((ControllerTileEntity) worldIn.getTileEntity(pos)));
         }
-
+        System.out.println(hitX * 16 + " " + hitY * 16 + " " + hitZ * 16);
         return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
     }
 
@@ -91,7 +90,7 @@ public class BlockController extends BaseBlock {
                 worldIn.setBlockState(pos, state.withProperty(ACTIVE, Boolean.FALSE), 2);
             } else {
                 ControllerTileEntity tileEntity = (ControllerTileEntity) worldIn.getTileEntity(pos);
-                tileEntity.setActive(true);
+                tileEntity.setActive(false);
                 worldIn.setBlockState(pos, state.withProperty(ACTIVE, Boolean.FALSE), 2);
             }
         }
@@ -111,7 +110,7 @@ public class BlockController extends BaseBlock {
                 worldIn.setBlockState(pos, state.withProperty(ACTIVE, Boolean.FALSE), 2);
             } else {
                 ControllerTileEntity tileEntity = (ControllerTileEntity) worldIn.getTileEntity(pos);
-                tileEntity.setActive(true);
+                tileEntity.setActive(false);
                 worldIn.setBlockState(pos, state.withProperty(ACTIVE, Boolean.FALSE), 2);
             }
         }

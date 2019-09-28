@@ -1,20 +1,21 @@
 package com.jas777.signalbox.gui;
 
 import com.jas777.signalbox.Signalbox;
+import com.jas777.signalbox.network.signalpacket.PacketDispatcher;
+import com.jas777.signalbox.network.signalpacket.PacketGuiReturn;
 import com.jas777.signalbox.tileentity.SignalTileEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import java.io.IOException;
 
 public class GuiSignal extends GuiScreen {
 
-    private BlockPos pos;
+    private SignalTileEntity tile;
 
     private GuiTextField channelTextField;
     private GuiTextField idTextField;
@@ -27,8 +28,8 @@ public class GuiSignal extends GuiScreen {
     private final int guiWidth = 248;
     private final int guiHeight = 166;
 
-    public GuiSignal(BlockPos pos) {
-        this.pos = pos;
+    public GuiSignal(SignalTileEntity tile) {
+        this.tile = tile;
     }
 
     @Override
@@ -51,8 +52,7 @@ public class GuiSignal extends GuiScreen {
         GlStateManager.pushMatrix();
         {
 
-            SignalTileEntity tileEntity = (SignalTileEntity) mc.world.getTileEntity(pos);
-            if (tileEntity == null) mc.displayGuiScreen(null);
+            if (tile == null) mc.displayGuiScreen(null);
 
             channelTextField.drawTextBox();
             idTextField.drawTextBox();
@@ -67,12 +67,10 @@ public class GuiSignal extends GuiScreen {
     @Override
     public void initGui() {
 
-        SignalTileEntity tileEntity = (SignalTileEntity) mc.world.getTileEntity(pos);
-
         int centerX = (width / 2) - guiWidth / 2;
         int centerY = (height / 2) - guiHeight / 2;
 
-        if (tileEntity == null) mc.displayGuiScreen(null);
+        if (tile == null) mc.displayGuiScreen(null);
 
         buttonList.clear();
 
@@ -82,19 +80,20 @@ public class GuiSignal extends GuiScreen {
         channelTextField.setValidator(NumberUtils::isCreatable);
         idTextField.setValidator(NumberUtils::isCreatable);
 
-        channelTextField.setText("" + tileEntity.getChannel());
-        idTextField.setText("" + tileEntity.getId());
+        channelTextField.setText("" + tile.getChannel());
+        idTextField.setText("" + tile.getId());
 
         super.initGui();
     }
 
     @Override
     public void onGuiClosed() {
-        SignalTileEntity tileEntity = (SignalTileEntity) mc.world.getTileEntity(pos);
-
-        tileEntity.setChannel(Integer.parseInt(channelTextField.getText()));
-        tileEntity.setId(Integer.parseInt(idTextField.getText()));
-        super.onGuiClosed();
+        if (tile.getWorld().isRemote) {
+            tile.setChannel(Integer.parseInt(channelTextField.getText()));
+            tile.setId(Integer.parseInt(idTextField.getText()));
+            PacketGuiReturn packet = new PacketGuiReturn(tile);
+            PacketDispatcher.sendToServer(packet);
+        }
     }
 
     @Override
@@ -102,8 +101,6 @@ public class GuiSignal extends GuiScreen {
 
         channelTextField.textboxKeyTyped(typedChar, keyCode);
         idTextField.textboxKeyTyped(typedChar, keyCode);
-
-        update();
 
         super.keyTyped(typedChar, keyCode);
     }
@@ -115,13 +112,6 @@ public class GuiSignal extends GuiScreen {
         idTextField.mouseClicked(mouseX, mouseY, mouseButton);
 
         super.mouseClicked(mouseX, mouseY, mouseButton);
-    }
-
-    private void update() {
-        SignalTileEntity tileEntity = (SignalTileEntity) mc.world.getTileEntity(pos);
-
-        tileEntity.setChannel(Integer.parseInt(channelTextField.getText()));
-        tileEntity.setId(Integer.parseInt(idTextField.getText()));
     }
 
 }
