@@ -3,8 +3,6 @@ package com.jas777.signalbox;
 import com.jas777.signalbox.channel.ChannelDispatcher;
 import com.jas777.signalbox.network.packet.*;
 import com.jas777.signalbox.proxy.CommonProxy;
-import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
@@ -59,19 +57,19 @@ public class Signalbox {
 
     }
 
-    public static CreativeTabs tabSignalbox = new CreativeTabs("tabSignalbox") {
-
-        @Override
-        public ItemStack getTabIconItem() {
-            return null;
-        }
-
-        @Override
-        public boolean hasSearchBar() {
-            return true;
-        }
-
-    }.setBackgroundImageName("item_search.png");
+//    public static CreativeTabs tabSignalbox = new CreativeTabs("tabSignalbox") {
+//
+//        @Override
+//        public ItemStack getTabIconItem() {
+//            return null;
+//        }
+//
+//        @Override
+//        public boolean hasSearchBar() {
+//            return true;
+//        }
+//
+//    }.setBackgroundImageName("item_search.png");
 
     public ChannelDispatcher getChannelDispatcher() {
         return channelDispatcher;
