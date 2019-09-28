@@ -30,7 +30,7 @@ public class BlockVorsignalZs3v extends BaseDisplay {
         this.displayY1 = 7 * 0.0625;
         this.displayY2 = 14 * 0.0625;
 
-        this.displayZ = 7 * 0.0625;
+        this.displayZ = 11 * 0.0625;
 
     }
 

@@ -1,16 +1,21 @@
 package com.jas777.signalbox.gui;
 
 import com.jas777.signalbox.Signalbox;
+import com.jas777.signalbox.blocks.BaseSignal;
+import com.jas777.signalbox.channel.ChannelDispatcher;
 import com.jas777.signalbox.network.signalpacket.PacketDispatcher;
 import com.jas777.signalbox.network.signalpacket.PacketGuiReturn;
 import com.jas777.signalbox.tileentity.ControllerTileEntity;
+import com.jas777.signalbox.tileentity.SignalTileEntity;
+import com.jas777.signalbox.util.HasVariant;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.Rotation;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import java.io.IOException;
@@ -44,8 +49,18 @@ public class GuiController extends GuiScreen {
     private int variantOnStringLength;
     private int variantOffStringLength;
 
+    private SignalTileEntity signal;
+    private ChannelDispatcher dispatcher;
+    private BaseSignal block;
+    private HasVariant sVariant;
+
     public GuiController(ControllerTileEntity tile) {
         this.tile = tile;
+
+        this.dispatcher = Signalbox.instance.getChannelDispatcher();
+        this.signal = (SignalTileEntity) tile.getWorld().getTileEntity(dispatcher.getChannels().get(tile.getChannel()).getSignals().get(tile.getId()));
+        this.block = (BaseSignal) signal.getBlockType();
+        this.sVariant = (HasVariant) signal.getWorld().getBlockState(signal.getPos()).getBlock();
     }
 
     @Override
@@ -84,6 +99,11 @@ public class GuiController extends GuiScreen {
 
             fontRenderer.drawString("Channel", centerX + 60, centerY + 96, 0x000000);
             fontRenderer.drawString("Signal ID", centerX + 60, centerY + 116, 0x000000);
+
+            IBlockState state = signal.getWorld().getBlockState(signal.getPos());
+            drawTexturedModalRect(10, 10, Minecraft.getMinecraft().getBlockRendererDispatcher().getModelForState(state.withRotation(Rotation.CLOCKWISE_180).withProperty(BaseSignal.ACTIVE, true)).getParticleTexture(), 32, 32);
+
+            GlStateManager.translate(12, 12, 0);
         }
         GlStateManager.popMatrix();
 
@@ -156,6 +176,17 @@ public class GuiController extends GuiScreen {
                 break;
 
         }
+
+        if (tile.getWorld().isRemote) {
+            tile.setChannel(Integer.parseInt(channelTextField.getText()));
+            tile.setId(Integer.parseInt(idTextField.getText()));
+            PacketGuiReturn packet = new PacketGuiReturn(tile);
+            PacketDispatcher.sendToServer(packet);
+        }
+
+        this.dispatcher = Signalbox.instance.getChannelDispatcher();
+        this.signal = (SignalTileEntity) tile.getWorld().getTileEntity(dispatcher.getChannels().get(tile.getChannel()).getSignals().get(tile.getId()));
+        this.sVariant = (HasVariant) signal.getWorld().getBlockState(signal.getPos()).getBlock();
 
         super.actionPerformed(button);
     }
