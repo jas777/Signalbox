@@ -3,7 +3,8 @@ package com.jas777.signalbox.handler;
 import com.jas777.signalbox.Signalbox;
 import com.jas777.signalbox.init.ModBlocks;
 import com.jas777.signalbox.init.ModItems;
-import com.jas777.signalbox.tileentity.ControllerTileEntity;
+import com.jas777.signalbox.tileentity.ControllerDisplayTileEntity;
+import com.jas777.signalbox.tileentity.ControllerMasterTileEntity;
 import com.jas777.signalbox.tileentity.DisplayTileEntity;
 import com.jas777.signalbox.tileentity.SignalTileEntity;
 import com.jas777.signalbox.util.HasModel;
@@ -45,7 +46,8 @@ public class RegistryHandler {
         event.getRegistry().registerAll(ModBlocks.BLOCKS.toArray(new Block[0]));
         GameRegistry.registerTileEntity(SignalTileEntity.class, new ResourceLocation(Signalbox.MODID + ":signal_entity"));
         GameRegistry.registerTileEntity(DisplayTileEntity.class, new ResourceLocation(Signalbox.MODID + ":display_entity"));
-        GameRegistry.registerTileEntity(ControllerTileEntity.class, new ResourceLocation(Signalbox.MODID + ":controller_entity"));
+        GameRegistry.registerTileEntity(ControllerMasterTileEntity.class, new ResourceLocation(Signalbox.MODID + ":controller_master_entity"));
+        GameRegistry.registerTileEntity(ControllerDisplayTileEntity.class, new ResourceLocation(Signalbox.MODID + ":controller_display_entity"));
         Signalbox.proxy.registerRender();
     }
 

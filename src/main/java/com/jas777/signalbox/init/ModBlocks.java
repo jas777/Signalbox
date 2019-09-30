@@ -1,13 +1,13 @@
 package com.jas777.signalbox.init;
 
+import com.jas777.signalbox.blocks.controller.ControllerType;
 import com.jas777.signalbox.blocks.de.BlockShuntSignalGroundOld;
 import com.jas777.signalbox.blocks.de.ksmehrfachssignal.BlockKsMehrfachssignalHead;
 import com.jas777.signalbox.blocks.de.ksmehrfachssignal.BlockKsMehrfachssignalZs3;
 import com.jas777.signalbox.blocks.de.vorsignal.*;
 import com.jas777.signalbox.blocks.de.vorsignal.hv.BlockHvVorsignalHead;
 import com.jas777.signalbox.blocks.de.vorsignal.kompakt.BlockKompaktvorsignalHead;
-import com.jas777.signalbox.blocks.pl.BlockGroundSignal;
-import com.jas777.signalbox.blocks.signalbox.BlockController;
+import com.jas777.signalbox.blocks.controller.BlockController;
 import net.minecraft.block.Block;
 
 import java.util.ArrayList;
@@ -19,11 +19,10 @@ public class ModBlocks {
 
     // GENERAL
 
-    public static final Block CONTROLLER_MASTER = new BlockController();
+    public static final Block CONTROLLER_MASTER = new BlockController(ControllerType.SIGNAL_CONTROLLER);
+    public static final Block CONTROLLER_DISPLAY = new BlockController(ControllerType.DISPLAY_CONTROLLER);
 
     // PL
-
-    public static final Block PL_GROUND_SIGNAL = new BlockGroundSignal();
 
     // DE
 

@@ -33,6 +33,8 @@ public class BlockKsMehrfachssignalZs3 extends BaseDisplay {
 
         this.displayZ = 2 * 0.0625;
 
+        this.color = 0xFFFFFF;
+
     }
 
     @Override

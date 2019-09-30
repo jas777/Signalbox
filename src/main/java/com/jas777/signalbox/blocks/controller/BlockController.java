@@ -1,8 +1,11 @@
-package com.jas777.signalbox.blocks.signalbox;
+package com.jas777.signalbox.blocks.controller;
 
 import com.jas777.signalbox.blocks.BaseBlock;
-import com.jas777.signalbox.gui.GuiController;
-import com.jas777.signalbox.tileentity.ControllerTileEntity;
+import com.jas777.signalbox.gui.GuiControllerDisplay;
+import com.jas777.signalbox.gui.GuiControllerMaster;
+import com.jas777.signalbox.tileentity.ControllerDisplayTileEntity;
+import com.jas777.signalbox.tileentity.ControllerMasterTileEntity;
+import com.jas777.signalbox.util.CanBePowered;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -26,8 +29,11 @@ public class BlockController extends BaseBlock {
     private static final AxisAlignedBB BOUNDING_BOX = new AxisAlignedBB(2 * 0.0625, 0, 2 * 0.0625, 14 * 0.0625, 1, 14 * 0.0625);
     public static final PropertyBool ACTIVE = PropertyBool.create("active");
 
-    public BlockController() {
-        super("controller_master", Material.IRON);
+    private ControllerType type;
+
+    public BlockController(ControllerType type) {
+        super(type.getBlockName(), Material.IRON);
+        this.type = type;
     }
 
     @Override
@@ -54,10 +60,16 @@ public class BlockController extends BaseBlock {
     @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (worldIn.isRemote) {
-            Minecraft.getMinecraft().displayGuiScreen(new GuiController((ControllerTileEntity) worldIn.getTileEntity(pos)));
+            switch (type) {
+                case SIGNAL_CONTROLLER:
+                    Minecraft.getMinecraft().displayGuiScreen(new GuiControllerMaster((ControllerMasterTileEntity) worldIn.getTileEntity(pos)));
+                    break;
+                case DISPLAY_CONTROLLER:
+                    Minecraft.getMinecraft().displayGuiScreen(new GuiControllerDisplay((ControllerDisplayTileEntity) worldIn.getTileEntity(pos)));
+            }
         }
         System.out.println(hitX * 16 + " " + hitY * 16 + " " + hitZ * 16);
-        return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
+        return false;
     }
 
     @Override
@@ -68,7 +80,14 @@ public class BlockController extends BaseBlock {
     @Nullable
     @Override
     public TileEntity createTileEntity(World world, IBlockState state) {
-        return new ControllerTileEntity();
+        switch (type) {
+            case SIGNAL_CONTROLLER:
+                return new ControllerMasterTileEntity();
+            case DISPLAY_CONTROLLER:
+                return new ControllerDisplayTileEntity();
+            default:
+                return null;
+        }
     }
 
     @Override
@@ -85,11 +104,11 @@ public class BlockController extends BaseBlock {
     public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state) {
         if (!worldIn.isRemote) {
             if (worldIn.isBlockPowered(pos)) {
-                ControllerTileEntity tileEntity = (ControllerTileEntity) worldIn.getTileEntity(pos);
+                CanBePowered tileEntity = (CanBePowered) worldIn.getTileEntity(pos);
                 tileEntity.setActive(true);
-                worldIn.setBlockState(pos, state.withProperty(ACTIVE, Boolean.FALSE), 2);
+                worldIn.setBlockState(pos, state.withProperty(ACTIVE, Boolean.TRUE), 2);
             } else {
-                ControllerTileEntity tileEntity = (ControllerTileEntity) worldIn.getTileEntity(pos);
+                CanBePowered tileEntity = (CanBePowered) worldIn.getTileEntity(pos);
                 tileEntity.setActive(false);
                 worldIn.setBlockState(pos, state.withProperty(ACTIVE, Boolean.FALSE), 2);
             }
@@ -105,11 +124,11 @@ public class BlockController extends BaseBlock {
     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
         if (!worldIn.isRemote) {
             if (worldIn.isBlockPowered(pos)) {
-                ControllerTileEntity tileEntity = (ControllerTileEntity) worldIn.getTileEntity(pos);
+                CanBePowered tileEntity = (CanBePowered) worldIn.getTileEntity(pos);
                 tileEntity.setActive(true);
-                worldIn.setBlockState(pos, state.withProperty(ACTIVE, Boolean.FALSE), 2);
+                worldIn.setBlockState(pos, state.withProperty(ACTIVE, Boolean.TRUE), 2);
             } else {
-                ControllerTileEntity tileEntity = (ControllerTileEntity) worldIn.getTileEntity(pos);
+                CanBePowered tileEntity = (CanBePowered) worldIn.getTileEntity(pos);
                 tileEntity.setActive(false);
                 worldIn.setBlockState(pos, state.withProperty(ACTIVE, Boolean.FALSE), 2);
             }
@@ -140,5 +159,9 @@ public class BlockController extends BaseBlock {
     @Override
     protected BlockStateContainer createBlockState() {
         return new BlockStateContainer(this, new IProperty[]{FACING, ACTIVE});
+    }
+
+    public ControllerType getType() {
+        return type;
     }
 }

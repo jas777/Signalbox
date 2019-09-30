@@ -34,10 +34,10 @@ public class DisplayTileEntityRenderer extends TileEntitySpecialRenderer<Display
         GlStateManager.glNormal3f(0.0F, 0.0F, -0.010416667F);
         GlStateManager.depthMask(false);
 
-        String s = display.getDisplayedText();
+        String s = te.getDisplayedText();
 
         if (te.isActive()) {
-            fontRenderer.drawString(s, -fontRenderer.getStringWidth(s) / 2, -fontRenderer.FONT_HEIGHT / 2, 0xFFFFFF);
+            fontRenderer.drawString(s, -fontRenderer.getStringWidth(s) / 2, -fontRenderer.FONT_HEIGHT / 2, te.getDisplay().getColor());
         }
 
         GlStateManager.depthMask(true);

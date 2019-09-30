@@ -1,31 +1,25 @@
 package com.jas777.signalbox.gui;
 
 import com.jas777.signalbox.Signalbox;
-import com.jas777.signalbox.blocks.BaseSignal;
 import com.jas777.signalbox.network.signalpacket.PacketDispatcher;
 import com.jas777.signalbox.network.signalpacket.PacketGuiReturn;
+import com.jas777.signalbox.tileentity.DisplayTileEntity;
 import com.jas777.signalbox.tileentity.SignalTileEntity;
-import com.jas777.signalbox.util.HasVariant;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.block.model.IBakedModel;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.client.renderer.block.statemap.BlockStateMapper;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Rotation;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import java.awt.*;
 import java.io.IOException;
 
-public class GuiSignal extends GuiScreen {
+public class GuiDisplay extends GuiScreen {
 
-    private SignalTileEntity tile;
+    private DisplayTileEntity tile;
 
     private GuiTextField channelTextField;
     private GuiTextField idTextField;
@@ -40,7 +34,7 @@ public class GuiSignal extends GuiScreen {
     private final int guiWidth = 248;
     private final int guiHeight = 166;
 
-    public GuiSignal(SignalTileEntity tile) {
+    public GuiDisplay(DisplayTileEntity tile) {
         this.tile = tile;
         this.sprite = null;
     }
@@ -83,7 +77,7 @@ public class GuiSignal extends GuiScreen {
             idTextField.drawTextBox();
 
             fontRenderer.drawString("Channel", centerX + 60, centerY + 96, 0x000000);
-            fontRenderer.drawString("Signal ID", centerX + 60, centerY + 116, 0x000000);
+            fontRenderer.drawString("Display ID", centerX + 60, centerY + 116, 0x000000);
         }
         GlStateManager.popMatrix();
         GlStateManager.pushMatrix();

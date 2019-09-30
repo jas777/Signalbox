@@ -1,8 +1,14 @@
 package com.jas777.signalbox.channel;
 
 import com.jas777.signalbox.tileentity.SignalTileEntity;
+import com.jas777.signalbox.util.CanReceive;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.ByteBufInputStream;
+import io.netty.buffer.Unpooled;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.network.ByteBufUtils;
 
 import java.util.HashMap;
 
@@ -20,13 +26,40 @@ public class ChannelDispatcher {
 
     public void dispatchMessage(World world, int channel, int id, int variant) {
         Channel channelToDispatch = channels.get(channel);
-        if (channelToDispatch == null) return;
-        TileEntity tileEntity = world.getTileEntity(channelToDispatch.getSignals().get(id));
-        if (!(tileEntity instanceof SignalTileEntity)) return;
-        ((SignalTileEntity) tileEntity).setSignalVariant(variant);
+        if (world == null || channelToDispatch == null || channelToDispatch.getReceivers().get(id) == null) return;
+        if (channel <= 0 || id < 0) return;
+        TileEntity tileEntity = world.getTileEntity(channelToDispatch.getReceivers().get(id));
+        if (!(tileEntity instanceof CanReceive)) return;
+        ((CanReceive) tileEntity).setData(Unpooled.buffer().writeInt(variant));
         tileEntity.markDirty();
         System.out.println("Dispatch: " + channel + " - " + id + " - " + variant);
-        ((SignalTileEntity) tileEntity).updateBlock();
+        ((CanReceive) tileEntity).updateBlock();
+    }
+
+    public void dispatchMessage(World world, int channel, int id, String variant) {
+        Channel channelToDispatch = channels.get(channel);
+        if (world == null || channelToDispatch == null || channelToDispatch.getReceivers().get(id) == null) return;
+        if (channel <= 0 || id < 0) return;
+        TileEntity tileEntity = world.getTileEntity(channelToDispatch.getReceivers().get(id));
+        if (!(tileEntity instanceof CanReceive)) return;
+        ByteBuf buf = Unpooled.buffer();
+        ByteBufUtils.writeUTF8String(buf, variant);
+        ((CanReceive) tileEntity).setData(buf);
+        tileEntity.markDirty();
+        System.out.println("Dispatch: " + channel + " - " + id + " - " + variant);
+        ((CanReceive) tileEntity).updateBlock();
+    }
+
+    public SignalTileEntity getSignal(World world, int channel, int id) {
+        Channel signalChannel = channels.get(channel);
+        if (signalChannel == null) return null;
+        BlockPos pos = signalChannel.getReceivers().get(id);
+        if (pos == null) return null;
+        TileEntity te = world.getTileEntity(pos);
+        if (te instanceof SignalTileEntity) {
+            return (SignalTileEntity) te;
+        }
+        return null;
     }
 
 

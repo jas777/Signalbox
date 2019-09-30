@@ -1,12 +1,14 @@
 package com.jas777.signalbox.tileentity;
 
 import com.jas777.signalbox.Signalbox;
+import com.jas777.signalbox.blocks.controller.BlockController;
 import com.jas777.signalbox.channel.Channel;
 import com.jas777.signalbox.gui.GuiUpdateHandler;
-import com.jas777.signalbox.network.packet.PacketRequestUpdateController;
-import com.jas777.signalbox.network.packet.PacketUpdateController;
+import com.jas777.signalbox.network.packet.PacketRequestUpdateControllerMaster;
+import com.jas777.signalbox.network.packet.PacketUpdateControllerMaster;
 import com.jas777.signalbox.network.signalpacket.SignalboxInputStream;
 import com.jas777.signalbox.network.signalpacket.SignalboxOutputStream;
+import com.jas777.signalbox.util.CanBePowered;
 import com.jas777.signalbox.util.HasVariant;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -22,13 +24,13 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Collections;
 
-public class ControllerTileEntity extends TileEntity implements GuiUpdateHandler {
+public class ControllerMasterTileEntity extends TileEntity implements GuiUpdateHandler, CanBePowered {
 
     private boolean active;
-    private int channel;
-    private int id;
-    private int variantOn;
-    private int variantOff;
+    private int channel = 0;
+    private int id = 0;
+    private int variantOn = 0;
+    private int variantOff = 0;
 
     @Override
     public void readFromNBT(NBTTagCompound compound) {
@@ -71,7 +73,7 @@ public class ControllerTileEntity extends TileEntity implements GuiUpdateHandler
     @Override
     public void onLoad() {
         if (world.isRemote) {
-            Signalbox.network.sendToServer(new PacketRequestUpdateController(this));
+            Signalbox.network.sendToServer(new PacketRequestUpdateControllerMaster(this));
         }
         super.onLoad();
     }
@@ -81,7 +83,7 @@ public class ControllerTileEntity extends TileEntity implements GuiUpdateHandler
         super.onDataPacket(net, packet);
         this.readFromNBT(packet.getNbtCompound());
         if (!world.isRemote) {
-            Signalbox.network.sendToAllAround(new PacketUpdateController(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
+            Signalbox.network.sendToAllAround(new PacketUpdateControllerMaster(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
         }
         world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos), 2);
     }
@@ -114,7 +116,7 @@ public class ControllerTileEntity extends TileEntity implements GuiUpdateHandler
     public void setChannel(int channel) {
         this.channel = channel;
         if (!world.isRemote) {
-            Signalbox.network.sendToAllAround(new PacketUpdateController(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
+            Signalbox.network.sendToAllAround(new PacketUpdateControllerMaster(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
         }
         update();
     }
@@ -122,7 +124,7 @@ public class ControllerTileEntity extends TileEntity implements GuiUpdateHandler
     public void setId(int id) {
         this.id = id;
         if (!world.isRemote) {
-            Signalbox.network.sendToAllAround(new PacketUpdateController(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
+            Signalbox.network.sendToAllAround(new PacketUpdateControllerMaster(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
         }
         update();
     }
@@ -130,7 +132,7 @@ public class ControllerTileEntity extends TileEntity implements GuiUpdateHandler
     public void setVariantOn(int variant) {
         this.variantOn = variant;
         if (!world.isRemote) {
-            Signalbox.network.sendToAllAround(new PacketUpdateController(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
+            Signalbox.network.sendToAllAround(new PacketUpdateControllerMaster(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
         }
         update();
     }
@@ -138,7 +140,7 @@ public class ControllerTileEntity extends TileEntity implements GuiUpdateHandler
     public void setVariantOff(int variantOff) {
         this.variantOff = variantOff;
         if (!world.isRemote) {
-            Signalbox.network.sendToAllAround(new PacketUpdateController(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
+            Signalbox.network.sendToAllAround(new PacketUpdateControllerMaster(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
         }
         update();
     }
@@ -147,9 +149,9 @@ public class ControllerTileEntity extends TileEntity implements GuiUpdateHandler
 
         Channel dispatchChannel = Signalbox.instance.getChannelDispatcher().getChannels().get(channel);
 
-        if (dispatchChannel == null) return 0;
+        if (dispatchChannel == null || dispatchChannel.getReceivers().get(id) == null) return 0;
 
-        SignalTileEntity tileEntity = (SignalTileEntity) world.getTileEntity(dispatchChannel.getSignals().get(id));
+        TileEntity tileEntity = world.getTileEntity(dispatchChannel.getReceivers().get(id));
 
         if (tileEntity == null) return 0;
 
@@ -158,14 +160,17 @@ public class ControllerTileEntity extends TileEntity implements GuiUpdateHandler
         return Collections.max(signal.getSignalVariant().getAllowedValues());
     }
 
+    @Override
     public boolean isActive() {
         return active;
     }
 
+    @Override
     public void setActive(boolean active) {
         this.active = active;
+        world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos).withProperty(BlockController.ACTIVE, active), 2);
         if (!world.isRemote) {
-            Signalbox.network.sendToAllAround(new PacketUpdateController(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
+            Signalbox.network.sendToAllAround(new PacketUpdateControllerMaster(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
         }
         update();
     }

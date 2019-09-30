@@ -1,0 +1,5 @@
+tile.controller_master.name=Master Controller
+tile.de_vorsignal_frame.name=DE Vorsignal Frame
+tile.de_vorsignal_frame_connected.name=DE Vorsignal Frame
+tile.de_vorsignal_pole.name=DE Vorsignal Pole
+tile.de_vorsignal_stand.name=DE Vorsignal Stand

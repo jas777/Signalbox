@@ -16,7 +16,7 @@ import javax.annotation.Nullable;
 
 public class BlockVorsignalZs3v extends BaseDisplay {
 
-    private static final AxisAlignedBB BOUNDING_BOX = new AxisAlignedBB(1 * 0.0625, 0, 2 * 0.0625, 13 * 0.0625, 16 * 0.0625, 13 * 0.0625);
+    private static final AxisAlignedBB BOUNDING_BOX = new AxisAlignedBB(3 * 0.0625, 6 * 0.0625, 10 * 0.0625, 14 * 0.0625, 16 * 0.0625, 0 * 0.0625);
 
     public static final PropertyBool CONNECTED = PropertyBool.create("connected");
 
@@ -30,7 +30,9 @@ public class BlockVorsignalZs3v extends BaseDisplay {
         this.displayY1 = 7 * 0.0625;
         this.displayY2 = 14 * 0.0625;
 
-        this.displayZ = 11 * 0.0625;
+        this.displayZ = 10 * 0.0625;
+
+        this.color = 0xff6600;
 
     }
 

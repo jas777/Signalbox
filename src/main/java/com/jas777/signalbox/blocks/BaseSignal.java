@@ -2,6 +2,7 @@ package com.jas777.signalbox.blocks;
 
 import com.jas777.signalbox.gui.GuiSignal;
 import com.jas777.signalbox.tileentity.SignalTileEntity;
+import com.jas777.signalbox.util.CanBePowered;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
@@ -74,8 +75,12 @@ public class BaseSignal extends BaseBlock {
     public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state) {
         if (!worldIn.isRemote) {
             if (worldIn.isBlockPowered(pos)) {
+                CanBePowered tileEntity = (CanBePowered) worldIn.getTileEntity(pos);
+                tileEntity.setActive(true);
                 worldIn.setBlockState(pos, state.withProperty(ACTIVE, Boolean.TRUE), 2);
             } else {
+                CanBePowered tileEntity = (CanBePowered) worldIn.getTileEntity(pos);
+                tileEntity.setActive(false);
                 worldIn.setBlockState(pos, state.withProperty(ACTIVE, Boolean.FALSE), 2);
             }
         }
@@ -90,8 +95,12 @@ public class BaseSignal extends BaseBlock {
     public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
         if (!worldIn.isRemote) {
             if (worldIn.isBlockPowered(pos)) {
+                CanBePowered tileEntity = (CanBePowered) worldIn.getTileEntity(pos);
+                tileEntity.setActive(true);
                 worldIn.setBlockState(pos, state.withProperty(ACTIVE, Boolean.TRUE), 2);
             } else {
+                CanBePowered tileEntity = (CanBePowered) worldIn.getTileEntity(pos);
+                tileEntity.setActive(false);
                 worldIn.setBlockState(pos, state.withProperty(ACTIVE, Boolean.FALSE), 2);
             }
         }
@@ -123,7 +132,7 @@ public class BaseSignal extends BaseBlock {
         if (worldIn.isRemote) {
             Minecraft.getMinecraft().displayGuiScreen(new GuiSignal((SignalTileEntity) worldIn.getTileEntity(pos)));
         }
-        return super.onBlockActivated(worldIn, pos, state, playerIn, hand, facing, hitX, hitY, hitZ);
+        return false;
     }
 
 }

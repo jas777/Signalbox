@@ -6,14 +6,14 @@ import java.util.HashMap;
 
 public class Channel {
 
-    private HashMap<Integer, BlockPos> signals;
+    private HashMap<Integer, BlockPos> receivers;
 
     public Channel() {
-        this.signals = new HashMap<Integer, BlockPos>();
+        this.receivers = new HashMap<Integer, BlockPos>();
     }
 
-    public HashMap<Integer, BlockPos> getSignals() {
-        return signals;
+    public HashMap<Integer, BlockPos> getReceivers() {
+        return receivers;
     }
 
 }

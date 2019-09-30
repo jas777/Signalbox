@@ -16,15 +16,19 @@ public class PacketUpdateDisplay implements IMessage {
     private BlockPos pos;
     private boolean active;
     private String textToDisplay;
+    private int channel;
+    private int id;
 
-    public PacketUpdateDisplay(BlockPos pos, boolean active, String textToDisplay) {
+    public PacketUpdateDisplay(BlockPos pos, boolean active, int channel, int id, String textToDisplay) {
         this.pos = pos;
         this.active = active;
         this.textToDisplay = textToDisplay;
+        this.channel = channel;
+        this.id = id;
     }
 
     public PacketUpdateDisplay(DisplayTileEntity te) {
-        this(te.getPos(), te.isActive(), te.getDisplayedText());
+        this(te.getPos(), te.isActive(), te.getChannel(), te.getId(), te.getDisplayedText());
     }
 
     public PacketUpdateDisplay() {}
@@ -34,6 +38,8 @@ public class PacketUpdateDisplay implements IMessage {
         pos = BlockPos.fromLong(buf.readLong());
         active = buf.readBoolean();
         textToDisplay = ByteBufUtils.readUTF8String(buf);
+        id = buf.readInt();
+        channel = buf.readInt();
     }
 
     @Override
@@ -41,6 +47,8 @@ public class PacketUpdateDisplay implements IMessage {
         buf.writeLong(pos.toLong());
         buf.writeBoolean(active);
         ByteBufUtils.writeUTF8String(buf, textToDisplay);
+        buf.writeInt(id);
+        buf.writeInt(channel);
     }
 
     public static class Handler implements IMessageHandler<PacketUpdateDisplay, IMessage> {
@@ -50,6 +58,8 @@ public class PacketUpdateDisplay implements IMessage {
                 DisplayTileEntity te = (DisplayTileEntity) Minecraft.getMinecraft().world.getTileEntity(message.pos);
                 te.setActive(message.active);
                 te.setDisplayedText(message.textToDisplay);
+                te.setChannel(message.channel);
+                te.setId(message.id);
             });
             return null;
         }

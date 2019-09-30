@@ -1,6 +1,6 @@
 package com.jas777.signalbox.network.packet;
 
-import com.jas777.signalbox.tileentity.ControllerTileEntity;
+import com.jas777.signalbox.tileentity.ControllerMasterTileEntity;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -9,21 +9,21 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
-public class PacketRequestUpdateController implements IMessage {
+public class PacketRequestUpdateControllerMaster implements IMessage {
 
     private BlockPos pos;
     private int dimension;
 
-    public PacketRequestUpdateController(BlockPos pos, int dimension) {
+    public PacketRequestUpdateControllerMaster(BlockPos pos, int dimension) {
         this.pos = pos;
         this.dimension = dimension;
     }
 
-    public PacketRequestUpdateController(ControllerTileEntity te) {
+    public PacketRequestUpdateControllerMaster(ControllerMasterTileEntity te) {
         this(te.getPos(), te.getWorld().provider.getDimension());
     }
 
-    public PacketRequestUpdateController() {
+    public PacketRequestUpdateControllerMaster() {
     }
 
     @Override
@@ -38,14 +38,14 @@ public class PacketRequestUpdateController implements IMessage {
         dimension = buf.readInt();
     }
 
-    public static class Handler implements IMessageHandler<PacketRequestUpdateController, PacketUpdateController> {
+    public static class Handler implements IMessageHandler<PacketRequestUpdateControllerMaster, PacketUpdateControllerMaster> {
 
         @Override
-        public PacketUpdateController onMessage(PacketRequestUpdateController message, MessageContext ctx) {
+        public PacketUpdateControllerMaster onMessage(PacketRequestUpdateControllerMaster message, MessageContext ctx) {
             World world = FMLCommonHandler.instance().getMinecraftServerInstance().getWorld(message.dimension);
-            ControllerTileEntity te = (ControllerTileEntity) world.getTileEntity(message.pos);
+            ControllerMasterTileEntity te = (ControllerMasterTileEntity) world.getTileEntity(message.pos);
             if (te != null) {
-                return new PacketUpdateController(te);
+                return new PacketUpdateControllerMaster(te);
             } else {
                 return null;
             }
