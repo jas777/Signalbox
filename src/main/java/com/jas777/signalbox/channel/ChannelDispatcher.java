@@ -1,9 +1,7 @@
 package com.jas777.signalbox.channel;
 
-import com.jas777.signalbox.tileentity.SignalTileEntity;
 import com.jas777.signalbox.util.CanReceive;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufInputStream;
 import io.netty.buffer.Unpooled;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
@@ -50,14 +48,14 @@ public class ChannelDispatcher {
         ((CanReceive) tileEntity).updateBlock();
     }
 
-    public SignalTileEntity getSignal(World world, int channel, int id) {
+    public CanReceive getReceiver(World world, int channel, int id) {
         Channel signalChannel = channels.get(channel);
         if (signalChannel == null) return null;
         BlockPos pos = signalChannel.getReceivers().get(id);
         if (pos == null) return null;
         TileEntity te = world.getTileEntity(pos);
-        if (te instanceof SignalTileEntity) {
-            return (SignalTileEntity) te;
+        if (te instanceof CanReceive) {
+            return (CanReceive) te;
         }
         return null;
     }

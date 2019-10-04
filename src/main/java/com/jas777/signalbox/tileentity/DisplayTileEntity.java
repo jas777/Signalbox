@@ -8,12 +8,9 @@ import com.jas777.signalbox.network.packet.PacketRequestUpdateDisplay;
 import com.jas777.signalbox.network.packet.PacketUpdateDisplay;
 import com.jas777.signalbox.network.signalpacket.SignalboxInputStream;
 import com.jas777.signalbox.network.signalpacket.SignalboxOutputStream;
-import com.jas777.signalbox.tileentity.data.TileEntityData;
 import com.jas777.signalbox.util.CanBePowered;
 import com.jas777.signalbox.util.CanReceive;
-import com.jas777.signalbox.util.HasVariant;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufUtil;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -58,8 +55,27 @@ public class DisplayTileEntity extends TileEntity implements GuiUpdateHandler, C
 
     @Override
     public void onLoad() {
+        if (channel != 0 && id != 0) {
+
+            Channel dispatchChannel = Signalbox.instance.getChannelDispatcher().getChannels().get(channel);
+
+            if (dispatchChannel == null) {
+                Signalbox.instance.getChannelDispatcher().getChannels().put(channel, new Channel());
+                Channel newChannel = Signalbox.instance.getChannelDispatcher().getChannels().get(channel);
+                newChannel.getReceivers().put(id, pos);
+            } else {
+                if (dispatchChannel.getReceivers().containsKey(this.id)) {
+                    dispatchChannel.getReceivers().remove(pos);
+                    dispatchChannel.getReceivers().put(id, pos);
+                } else {
+                    dispatchChannel.getReceivers().put(id, pos);
+                }
+            }
+        }
         if (world.isRemote) {
             Signalbox.network.sendToServer(new PacketRequestUpdateDisplay(this));
+        } else {
+            Signalbox.network.sendToAllAround(new PacketUpdateDisplay(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
         }
     }
 
@@ -104,20 +120,20 @@ public class DisplayTileEntity extends TileEntity implements GuiUpdateHandler, C
 
     @Override
     public void updateBlock() {
-        if (!world.isRemote) {
+        if (world != null && !world.isRemote) {
             Signalbox.network.sendToAllAround(new PacketUpdateDisplay(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
         }
     }
 
     public void setActive(boolean active) {
-        world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos).withProperty(BaseDisplay.ACTIVE, true/*active*/), 2);
-        if (!world.isRemote) {
+        world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos).withProperty(BaseDisplay.ACTIVE, active), 2);
+        if (world != null && !world.isRemote) {
             Signalbox.network.sendToAllAround(new PacketUpdateDisplay(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
         }
     }
 
     public boolean isActive() {
-        return true; //world.getBlockState(pos).getValue(BaseSignal.ACTIVE);
+        return world.getBlockState(pos).getValue(BaseDisplay.ACTIVE);
     }
 
     @Override
@@ -152,7 +168,7 @@ public class DisplayTileEntity extends TileEntity implements GuiUpdateHandler, C
 
         this.id = id;
 
-        if (!world.isRemote) {
+        if (world != null && !world.isRemote) {
             Signalbox.network.sendToAllAround(new PacketUpdateDisplay(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
         }
 
@@ -184,7 +200,7 @@ public class DisplayTileEntity extends TileEntity implements GuiUpdateHandler, C
 
         this.channel = channel;
 
-        if (!world.isRemote) {
+        if (world != null && !world.isRemote) {
             Signalbox.network.sendToAllAround(new PacketUpdateDisplay(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
         }
 

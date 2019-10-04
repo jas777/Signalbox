@@ -1,5 +1,6 @@
 package com.jas777.signalbox.network.packet;
 
+import com.jas777.signalbox.signal.SignalMode;
 import com.jas777.signalbox.tileentity.SignalTileEntity;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
@@ -14,16 +15,18 @@ public class PacketUpdateSignal implements IMessage {
     private int channel;
     private int id;
     private int variant;
+    private int mode;
 
-    public PacketUpdateSignal(BlockPos pos, int channel, int id, int variant) {
+    public PacketUpdateSignal(BlockPos pos, int channel, int id, int variant, int mode) {
         this.pos = pos;
         this.channel = channel;
         this.id = id;
         this.variant = variant;
+        this.mode = mode;
     }
 
     public PacketUpdateSignal(SignalTileEntity te) {
-        this(te.getPos(), te.getChannel(), te.getId(), te.getSignalVariant());
+        this(te.getPos(), te.getChannel(), te.getId(), te.getSignalVariant(), te.getMode().ordinal());
     }
 
     public PacketUpdateSignal() {}
@@ -34,6 +37,7 @@ public class PacketUpdateSignal implements IMessage {
         channel = buf.readInt();
         id = buf.readInt();
         variant = buf.readInt();
+        mode = buf.readInt();
     }
 
     @Override
@@ -42,6 +46,7 @@ public class PacketUpdateSignal implements IMessage {
         buf.writeInt(channel);
         buf.writeInt(id);
         buf.writeInt(variant);
+        buf.writeInt(mode);
     }
 
     public static class Handler implements IMessageHandler<PacketUpdateSignal, IMessage> {
@@ -52,6 +57,7 @@ public class PacketUpdateSignal implements IMessage {
                 te.setChannel(message.channel);
                 te.setId(message.id);
                 te.setSignalVariant(message.variant);
+                te.setMode(SignalMode.values()[message.mode]);
             });
             return null;
         }

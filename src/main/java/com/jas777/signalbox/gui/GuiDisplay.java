@@ -4,7 +4,6 @@ import com.jas777.signalbox.Signalbox;
 import com.jas777.signalbox.network.signalpacket.PacketDispatcher;
 import com.jas777.signalbox.network.signalpacket.PacketGuiReturn;
 import com.jas777.signalbox.tileentity.DisplayTileEntity;
-import com.jas777.signalbox.tileentity.SignalTileEntity;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -130,6 +129,9 @@ public class GuiDisplay extends GuiScreen {
 
         channelTextField.textboxKeyTyped(typedChar, keyCode);
         idTextField.textboxKeyTyped(typedChar, keyCode);
+
+        tile.setChannel(Integer.parseInt(channelTextField.getText()));
+        tile.setId(Integer.parseInt(idTextField.getText()));
 
         super.keyTyped(typedChar, keyCode);
     }

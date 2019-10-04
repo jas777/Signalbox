@@ -5,7 +5,6 @@ import com.jas777.signalbox.channel.ChannelDispatcher;
 import com.jas777.signalbox.network.signalpacket.PacketDispatcher;
 import com.jas777.signalbox.network.signalpacket.PacketGuiReturn;
 import com.jas777.signalbox.tileentity.ControllerDisplayTileEntity;
-import com.jas777.signalbox.tileentity.ControllerMasterTileEntity;
 import com.jas777.signalbox.tileentity.DisplayTileEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -172,6 +171,7 @@ public class GuiControllerDisplay extends GuiScreen {
     @Override
     public void onGuiClosed() {
         if (tile.getWorld().isRemote) {
+            if (!(Signalbox.instance.getChannelDispatcher().getReceiver(tile.getWorld(), Integer.parseInt(channelTextField.getText()), Integer.parseInt(idTextField.getText())) instanceof DisplayTileEntity)) return;
             if (Integer.parseInt(channelTextField.getText()) <= 0) return;
             tile.setChannel(Integer.parseInt(channelTextField.getText()));
             tile.setId(Integer.parseInt(idTextField.getText()));

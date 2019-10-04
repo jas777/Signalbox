@@ -1,5 +1,6 @@
 package com.jas777.signalbox.blocks;
 
+import com.jas777.signalbox.Signalbox;
 import com.jas777.signalbox.gui.GuiSignal;
 import com.jas777.signalbox.tileentity.SignalTileEntity;
 import com.jas777.signalbox.util.CanBePowered;
@@ -119,12 +120,16 @@ public class BaseSignal extends BaseBlock {
 
     @Override
     public void breakBlock(World worldIn, BlockPos pos, IBlockState state) {
+        SignalTileEntity te = (SignalTileEntity) worldIn.getTileEntity(pos);
+        if (te != null && (te.getChannel() > 0 || te.getId() > 0)) {
+            Signalbox.instance.getChannelDispatcher().getChannels().get(te.getChannel()).getReceivers().remove(te.getId());
+        }
         super.breakBlock(worldIn, pos, state);
     }
 
     @Override
     public int getLightValue(IBlockState state) {
-        return 7;
+        return 15;
     }
 
     @Override
@@ -135,4 +140,8 @@ public class BaseSignal extends BaseBlock {
         return false;
     }
 
+    @Override
+    public float getAmbientOcclusionLightValue(IBlockState state) {
+        return 3F;
+    }
 }

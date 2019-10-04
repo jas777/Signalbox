@@ -2,6 +2,7 @@ package com.jas777.signalbox.blocks.de.vorsignal;
 
 import com.jas777.signalbox.blocks.BaseBlock;
 import com.jas777.signalbox.blocks.BaseDisplay;
+import com.jas777.signalbox.util.SignalMast;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -17,7 +18,7 @@ import net.minecraft.world.IBlockAccess;
 
 import javax.annotation.Nullable;
 
-public class BlockVorsignalFrame extends BaseBlock {
+public class BlockVorsignalFrame extends BaseBlock implements SignalMast {
 
     private static final AxisAlignedBB BOUNDING_BOX = new AxisAlignedBB(2 * 0.0625, 0, 2 * 0.0625, 14 * 0.0625, 1, 14 * 0.0625);
 

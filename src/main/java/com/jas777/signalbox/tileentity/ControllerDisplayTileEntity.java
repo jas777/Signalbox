@@ -2,16 +2,17 @@ package com.jas777.signalbox.tileentity;
 
 import com.jas777.signalbox.Signalbox;
 import com.jas777.signalbox.blocks.controller.BlockController;
-import com.jas777.signalbox.channel.Channel;
 import com.jas777.signalbox.gui.GuiUpdateHandler;
-import com.jas777.signalbox.network.packet.*;
+import com.jas777.signalbox.network.packet.PacketRequestUpdateControllerDisplay;
+import com.jas777.signalbox.network.packet.PacketUpdateControllerDisplay;
 import com.jas777.signalbox.network.signalpacket.SignalboxInputStream;
 import com.jas777.signalbox.network.signalpacket.SignalboxOutputStream;
 import com.jas777.signalbox.util.CanBePowered;
-import com.jas777.signalbox.util.HasVariant;
+import com.jas777.signalbox.util.Controller;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
@@ -21,22 +22,28 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-public class ControllerDisplayTileEntity extends TileEntity implements GuiUpdateHandler, CanBePowered {
+public class ControllerDisplayTileEntity extends TileEntity implements GuiUpdateHandler, CanBePowered, Controller {
 
     private boolean active;
     private int channel = 0;
     private int id = 0;
     private int speedLimit = 0;
+    private NBTTagIntArray slavePos;
+
+    private List<Controller> slaves = new ArrayList<Controller>();
 
     @Override
     public void readFromNBT(NBTTagCompound compound) {
         super.readFromNBT(compound);
-        this.channel = compound.getInteger("channel");
-        this.id = compound.getInteger("display_id");
-        this.speedLimit = compound.getInteger("speed_limit");
+        setChannel(compound.getInteger("channel"));
+        setId(compound.getInteger("display_id"));
+        setSpeedLimit(compound.getInteger("speed_limit"));
         this.active = compound.getBoolean("active");
+        this.slavePos = (NBTTagIntArray) compound.getTag("slaves");
     }
 
     @Override
@@ -46,6 +53,8 @@ public class ControllerDisplayTileEntity extends TileEntity implements GuiUpdate
         compound.setInteger("display_id", getId());
         compound.setInteger("speed_limit", getSpeedLimit());
         compound.setBoolean("active", active);
+        Integer[] serialized = slaves.stream().map(s -> (int) s.getPosition().toLong()).toArray(Integer[]::new);
+        compound.setTag("slaves", new NBTTagIntArray(Arrays.asList(serialized)));
         return compound;
     }
 
@@ -68,6 +77,18 @@ public class ControllerDisplayTileEntity extends TileEntity implements GuiUpdate
 
     @Override
     public void onLoad() {
+
+        if (slavePos != null && slavePos.getIntArray().length > 0) {
+            for (int i : slavePos.getIntArray()) {
+                BlockPos pos = BlockPos.fromLong(i);
+                TileEntity te = world.getTileEntity(pos);
+                if (!(te instanceof Controller)) return;
+                if (!slaves.contains(te)) {
+                    slaves.add((Controller) te);
+                }
+            }
+        }
+
         if (world.isRemote) {
             Signalbox.network.sendToServer(new PacketRequestUpdateControllerDisplay(this));
         }
@@ -85,6 +106,8 @@ public class ControllerDisplayTileEntity extends TileEntity implements GuiUpdate
     }
 
     public void update() {
+        if (!(Signalbox.instance.getChannelDispatcher().getReceiver(world, getChannel(), getId()) instanceof DisplayTileEntity))
+            return;
         if (isActive()) {
             Signalbox.instance.getChannelDispatcher().dispatchMessage(world, getChannel(), getId(), String.valueOf(getSpeedLimit()));
         } else {
@@ -166,5 +189,15 @@ public class ControllerDisplayTileEntity extends TileEntity implements GuiUpdate
     @Override
     public World theWorld() {
         return getWorld();
+    }
+
+    @Override
+    public List<Controller> getSlaves() {
+        return slaves;
+    }
+
+    @Override
+    public BlockPos getPosition() {
+        return getPos();
     }
 }

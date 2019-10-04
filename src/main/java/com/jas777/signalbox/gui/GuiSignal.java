@@ -1,23 +1,18 @@
 package com.jas777.signalbox.gui;
 
 import com.jas777.signalbox.Signalbox;
-import com.jas777.signalbox.blocks.BaseSignal;
 import com.jas777.signalbox.network.signalpacket.PacketDispatcher;
 import com.jas777.signalbox.network.signalpacket.PacketGuiReturn;
+import com.jas777.signalbox.signal.SignalMode;
 import com.jas777.signalbox.tileentity.SignalTileEntity;
-import com.jas777.signalbox.util.HasVariant;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.block.model.IBakedModel;
-import net.minecraft.client.renderer.block.model.ModelResourceLocation;
-import net.minecraft.client.renderer.block.statemap.BlockStateMapper;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.Rotation;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import java.awt.*;
@@ -30,6 +25,12 @@ public class GuiSignal extends GuiScreen {
     private GuiTextField channelTextField;
     private GuiTextField idTextField;
 
+    private GuiButton buttonModePlus;
+    private GuiButton buttonModeMinus;
+
+    private final int BUTTON_MODE_PLUS = 0;
+    private final int BUTTON_MODE_MINUS = 1;
+
     private TextureAtlasSprite sprite;
 
     private final ResourceLocation texture = new ResourceLocation(Signalbox.MODID, "textures/gui/controller_background.png");
@@ -39,6 +40,8 @@ public class GuiSignal extends GuiScreen {
 
     private final int guiWidth = 248;
     private final int guiHeight = 166;
+
+    private int variantOnStringLength;
 
     public GuiSignal(SignalTileEntity tile) {
         this.tile = tile;
@@ -79,6 +82,9 @@ public class GuiSignal extends GuiScreen {
                 channelTextField.setTextColor(Color.WHITE.getRGB());
             }
 
+            buttonModePlus.drawButton(mc, mouseX, mouseY, partialTicks);
+            buttonModeMinus.drawButton(mc, mouseX, mouseY, partialTicks);
+
             channelTextField.drawTextBox();
             idTextField.drawTextBox();
 
@@ -107,6 +113,11 @@ public class GuiSignal extends GuiScreen {
 
         buttonList.clear();
 
+        int halfFontHeight = fontRenderer.FONT_HEIGHT / 2;
+
+        buttonList.add(buttonModePlus = new GuiButton(BUTTON_MODE_PLUS, centerX + variantOnStringLength + 15, centerY + 29 - halfFontHeight, 20, 20, "+"));
+        buttonList.add(buttonModeMinus = new GuiButton(BUTTON_MODE_MINUS, centerX + variantOnStringLength + 40, centerY + 29 - halfFontHeight, 20, 20, "-"));
+
         channelTextField = new GuiTextField(TEXT_CHANNEL, fontRenderer, centerX + 5, centerY + 94, 50, fontRenderer.FONT_HEIGHT + 2);
         idTextField = new GuiTextField(TEXT_ID, fontRenderer, centerX + 5, centerY + 114, 50, fontRenderer.FONT_HEIGHT + 2);
 
@@ -122,12 +133,27 @@ public class GuiSignal extends GuiScreen {
     }
 
     @Override
+    public void actionPerformed(GuiButton button) throws IOException {
+        switch (button.id) {
+            case BUTTON_MODE_PLUS:
+                if (tile.getMode().ordinal() == SignalMode.values().length - 1) return;
+                tile.setMode(SignalMode.values()[tile.getMode().ordinal() + 1]);
+                break;
+            case BUTTON_MODE_MINUS:
+                if (tile.getMode().ordinal() == 0) return;
+                tile.setMode(SignalMode.values()[tile.getMode().ordinal() - 1]);
+                break;
+        }
+    }
+
+    @Override
     public void onGuiClosed() {
         if (tile.getWorld().isRemote) {
             tile.setChannel(Integer.parseInt(channelTextField.getText()));
             tile.setId(Integer.parseInt(idTextField.getText()));
             PacketGuiReturn packet = new PacketGuiReturn(tile);
             PacketDispatcher.sendToServer(packet);
+            tile.markDirty();
         }
     }
 
@@ -136,6 +162,10 @@ public class GuiSignal extends GuiScreen {
 
         channelTextField.textboxKeyTyped(typedChar, keyCode);
         idTextField.textboxKeyTyped(typedChar, keyCode);
+
+        tile.setChannel(Integer.parseInt(channelTextField.getText()));
+        tile.setId(Integer.parseInt(idTextField.getText()));
+        tile.markDirty();
 
         super.keyTyped(typedChar, keyCode);
     }
