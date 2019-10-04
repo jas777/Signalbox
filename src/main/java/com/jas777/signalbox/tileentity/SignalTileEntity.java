@@ -43,7 +43,7 @@ public class SignalTileEntity extends TileEntity implements GuiUpdateHandler, Ca
 
     // AUTO MODE
 
-    private LastSwitchInfo lastSwitchInfo;
+    private LastSwitchInfo lastSwitchInfo = new LastSwitchInfo();
 
     private Vec3d origin = new Vec3d(0, -1, 0);
     private Vec3d lastLocation;
