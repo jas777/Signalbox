@@ -30,7 +30,6 @@ public class ChannelDispatcher {
         if (!(tileEntity instanceof CanReceive)) return;
         ((CanReceive) tileEntity).setData(Unpooled.buffer().writeInt(variant));
         tileEntity.markDirty();
-        System.out.println("Dispatch: " + channel + " - " + id + " - " + variant);
         ((CanReceive) tileEntity).updateBlock();
     }
 

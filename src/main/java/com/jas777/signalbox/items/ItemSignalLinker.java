@@ -35,7 +35,7 @@ public class ItemSignalLinker extends BaseItem {
             if (worldIn.getBlockState(pos).getBlock() instanceof BaseSignal) {
                 SignalTileEntity te = (SignalTileEntity) worldIn.getTileEntity(pos);
 
-                if (te != null) {
+                if (te != null && te.getMode() == SignalMode.AUTO) {
                     result = pairToSignal(worldIn, te, player);
                     finished = true;
                 }
@@ -44,20 +44,21 @@ public class ItemSignalLinker extends BaseItem {
                 IBlockState state = worldIn.getBlockState(pos);
                 if (state.getBlock() instanceof BaseSignal) {
                     SignalTileEntity te = (SignalTileEntity) worldIn.getTileEntity(pos);
-                    if (te.getMode() != SignalMode.AUTO)
-                    result = pairToManualSignal(worldIn, pos, player);
-                } else {
-                    try {
-                        Class railBaseClass = Class.forName("cam72cam.immersiverailroading.blocks.BlockRailBase");
+                    if (te.getMode() != SignalMode.AUTO) {
+                        result = pairToManualSignal(worldIn, pos, player);
+                    } else {
+                        try {
+                            Class railBaseClass = Class.forName("cam72cam.immersiverailroading.blocks.BlockRailBase");
 
-                        if (railBaseClass.isAssignableFrom(state.getBlock().getClass())) {
-                            result = setOccupationOrigin(worldIn, pos, player);
-                            finished = true;
+                            if (railBaseClass.isAssignableFrom(state.getBlock().getClass())) {
+                                result = setOccupationOrigin(worldIn, pos, player);
+                                finished = true;
+                            }
+                        } catch (Exception e) {
                         }
-                    } catch (Exception e) {
-                    }
-                    if (!finished) {
-                        result = EnumActionResult.PASS;
+                        if (!finished) {
+                            result = EnumActionResult.PASS;
+                        }
                     }
                 }
             }
@@ -66,66 +67,51 @@ public class ItemSignalLinker extends BaseItem {
         return result;
     }
 
-    private EnumActionResult pairToSignal(World worldIn, SignalTileEntity te, EntityPlayer player)
-    {
+    private EnumActionResult pairToSignal(World worldIn, SignalTileEntity te, EntityPlayer player) {
         NBTTagCompound tag = getTagOfLinker(player);
 
         int[] pairingpos = null;
-        if (player.isSneaking())
-        {
-            if (tag.hasKey("pairingpos"))
-            {
-                tag.removeTag("pairingpos");;
+        if (player.isSneaking()) {
+            if (tag.hasKey("pairingpos")) {
+                tag.removeTag("pairingpos");
+                ;
                 player.sendMessage(new TextComponentString("Unpaired from Signal"));
             }
 
 
-            if (tag.hasKey("occupationpairingpos"))
-            {
+            if (tag.hasKey("occupationpairingpos")) {
                 tag.removeTag("occupationpairingpos");
                 player.sendMessage(new TextComponentString("Stopped setting occupation origin"));
-            }
-            else
-            {
-                tag.setIntArray("occupationpairingpos", new int[] { te.getPos().getX(), te.getPos().getY(), te.getPos().getZ() });
+            } else {
+                tag.setIntArray("occupationpairingpos", new int[]{te.getPos().getX(), te.getPos().getY(), te.getPos().getZ()});
                 player.sendMessage(new TextComponentString("Starting setting occupation origin"));
             }
             return EnumActionResult.SUCCESS;
         }
 
-        if (tag.hasKey("occupationpairingpos"))
-        {
+        if (tag.hasKey("occupationpairingpos")) {
             tag.removeTag("occupationpairingpos");
             player.sendMessage(new TextComponentString("Stopped setting occupation origin"));
         }
 
-        if (tag.hasKey("pairingpos"))
-        {
+        if (tag.hasKey("pairingpos")) {
             pairingpos = tag.getIntArray("pairingpos");
             if (pairingpos[0] == te.getPos().getX() &&
                     pairingpos[1] == te.getPos().getY() &&
-                    pairingpos[2] == te.getPos().getZ())
-            {
+                    pairingpos[2] == te.getPos().getZ()) {
                 player.sendMessage(new TextComponentString("Unpaired from Signal"));
-            }
-            else
-            {
-                SignalTileEntity pairParent = (SignalTileEntity)worldIn.getTileEntity(new BlockPos(pairingpos[0], pairingpos[1], pairingpos[2]));
-                if (pairParent == null)
-                {
+            } else {
+                SignalTileEntity pairParent = (SignalTileEntity) worldIn.getTileEntity(new BlockPos(pairingpos[0], pairingpos[1], pairingpos[2]));
+                if (pairParent == null) {
                     player.sendMessage(new TextComponentString("Could not find the pairing origin.  Clearing pair origin."));
-                }
-                else
-                {
+                } else {
                     pairParent.setEndPoint(new Tuple2<BlockPos, BlockPos>(new BlockPos(te.getOrigin()), te.getPos()));
                     player.sendMessage(new TextComponentString("Paired!  Clearing pair origin."));
                 }
             }
             tag.removeTag("pairingpos");
-        }
-        else
-        {
-            tag.setIntArray("pairingpos", new int[] { te.getPos().getX(), te.getPos().getY(), te.getPos().getZ() });
+        } else {
+            tag.setIntArray("pairingpos", new int[]{te.getPos().getX(), te.getPos().getY(), te.getPos().getZ()});
             player.sendMessage(new TextComponentString("Paired to Signal"));
         }
 
@@ -133,29 +119,23 @@ public class ItemSignalLinker extends BaseItem {
         return EnumActionResult.SUCCESS;
     }
 
-    private EnumActionResult pairToManualSignal(World worldIn, BlockPos pos, EntityPlayer player)
-    {
+    private EnumActionResult pairToManualSignal(World worldIn, BlockPos pos, EntityPlayer player) {
         NBTTagCompound tag = getTagOfLinker(player);
 
         int[] pairingpos = null;
-        if (tag.hasKey("pairingpos"))
-        {
+        if (tag.hasKey("pairingpos")) {
             pairingpos = tag.getIntArray("pairingpos");
             BlockPos parentPos = new BlockPos(pairingpos[0], pairingpos[1], pairingpos[2]);
-            SignalTileEntity te = (SignalTileEntity)worldIn.getTileEntity(parentPos);
+            SignalTileEntity te = (SignalTileEntity) worldIn.getTileEntity(parentPos);
 
-            if (te == null)
-            {
+            if (te == null) {
                 player.sendMessage(new TextComponentString("Could not find the pairing origin.  Clearing pair origin."));
-            }
-            else
-            {
+            } else {
                 IBlockState signState = worldIn.getBlockState(pos);
-                EnumFacing facing = signState.getValue(BaseSignal.FACING).getOpposite();
+                EnumFacing facing = signState.getValue(BaseSignal.FACING);
                 Vec3d origin = ImmersiveRailroading.findOrigin(pos, facing, worldIn);
 
-                if (origin.y == -1)
-                {
+                if (origin.y == -1) {
                     player.sendMessage(new TextComponentString("Could not find track nearby.  Try again."));
                     return EnumActionResult.SUCCESS;
                 }
@@ -171,12 +151,10 @@ public class ItemSignalLinker extends BaseItem {
         return EnumActionResult.SUCCESS;
     }
 
-    private EnumActionResult setOccupationOrigin(World worldIn, BlockPos pos, EntityPlayer player)
-    {
+    private EnumActionResult setOccupationOrigin(World worldIn, BlockPos pos, EntityPlayer player) {
         NBTTagCompound tag = getTagOfLinker(player);
 
-        if (tag.hasKey("pairingpos"))
-        {
+        if (tag.hasKey("pairingpos")) {
             tag.removeTag("pairingpos");
             player.sendMessage(new TextComponentString("Stopped pairing with signal"));
         }
@@ -184,7 +162,7 @@ public class ItemSignalLinker extends BaseItem {
         int[] pairingposarray = tag.getIntArray("occupationpairingpos");
         BlockPos pairingpos = new BlockPos(pairingposarray[0], pairingposarray[1], pairingposarray[2]);
         IBlockState signalState = worldIn.getBlockState(pairingpos);
-        Vec3d trackPos = ImmersiveRailroading.findOrigin(pos, signalState.getValue(BaseSignal.FACING).getOpposite(), worldIn);
+        Vec3d trackPos = ImmersiveRailroading.findOrigin(pos, signalState.getValue(BaseSignal.FACING), worldIn);
         BlockPos originPos = new BlockPos(trackPos.x, trackPos.y, trackPos.z);
 
         PacketSetSignalOccupationOriginOnServer packet = new PacketSetSignalOccupationOriginOnServer(pairingpos, originPos);
@@ -196,11 +174,9 @@ public class ItemSignalLinker extends BaseItem {
         return EnumActionResult.SUCCESS;
     }
 
-    private NBTTagCompound getTagOfLinker(EntityPlayer player)
-    {
+    private NBTTagCompound getTagOfLinker(EntityPlayer player) {
         NBTTagCompound tag = player.inventory.getCurrentItem().getTagCompound();
-        if (tag == null)
-        {
+        if (tag == null) {
             tag = new NBTTagCompound();
         }
 

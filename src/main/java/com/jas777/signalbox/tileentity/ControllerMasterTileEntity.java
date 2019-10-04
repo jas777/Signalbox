@@ -15,6 +15,7 @@ import com.jas777.signalbox.util.CanBePowered;
 import com.jas777.signalbox.util.Controller;
 import com.jas777.signalbox.util.HasVariant;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagIntArray;
@@ -22,6 +23,7 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3d;
@@ -38,7 +40,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class ControllerMasterTileEntity extends TileEntity implements GuiUpdateHandler, CanBePowered, Controller {
+public class ControllerMasterTileEntity extends TileEntity implements ITickable, GuiUpdateHandler, CanBePowered, Controller {
 
     private boolean active;
     private int channel = 0;
@@ -110,6 +112,8 @@ public class ControllerMasterTileEntity extends TileEntity implements GuiUpdateH
             }
         }
 
+        Signalbox.instance.getControllerDispatcher().getControllers().put(getFrequency(), this);
+
         if (world.isRemote) {
             Signalbox.network.sendToServer(new PacketRequestUpdateControllerMaster(this));
         } else {
@@ -129,17 +133,18 @@ public class ControllerMasterTileEntity extends TileEntity implements GuiUpdateH
     }
 
     public void updateSignal() {
-        if (!(Signalbox.instance.getChannelDispatcher().getReceiver(world, getChannel(), getId()) instanceof SignalTileEntity))
+        if (getSignal() == null)
             return;
 
-        if (isActive()) {
-            if (getSignal().getMode() == SignalMode.AUTO) return;
-            Signalbox.instance.getChannelDispatcher().dispatchMessage(world, getChannel(), getId(), getVariantOn());
-        } else {
-            if (getSignal().getMode() == SignalMode.AUTO) return;
-            Signalbox.instance.getChannelDispatcher().dispatchMessage(world, getChannel(), getId(), getVariantOff());
+        if (getSignal() != null) {
+            if (isActive()) {
+                if (getSignal().getMode() == SignalMode.AUTO) return;
+                Signalbox.instance.getChannelDispatcher().dispatchMessage(world, getChannel(), getId(), getVariantOn());
+            } else {
+                if (getSignal().getMode() == SignalMode.AUTO) return;
+                Signalbox.instance.getChannelDispatcher().dispatchMessage(world, getChannel(), getId(), getVariantOff());
+            }
         }
-        getSignal().markDirty();
         markDirty();
     }
 
@@ -160,7 +165,11 @@ public class ControllerMasterTileEntity extends TileEntity implements GuiUpdateH
     }
 
     public void setChannel(int channel) {
+        if (this.channel != channel) {
+            Signalbox.instance.getControllerDispatcher().getControllers().remove(getFrequency());
+        }
         this.channel = channel;
+        Signalbox.instance.getControllerDispatcher().getControllers().put(getFrequency(), this);
         if (!world.isRemote) {
             Signalbox.network.sendToAllAround(new PacketUpdateControllerMaster(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
         }
@@ -168,7 +177,11 @@ public class ControllerMasterTileEntity extends TileEntity implements GuiUpdateH
     }
 
     public void setId(int id) {
+        if (this.id != id) {
+            Signalbox.instance.getControllerDispatcher().getControllers().remove(getFrequency());
+        }
         this.id = id;
+        Signalbox.instance.getControllerDispatcher().getControllers().put(getFrequency(), this);
         if (!world.isRemote) {
             Signalbox.network.sendToAllAround(new PacketUpdateControllerMaster(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
         }
@@ -269,7 +282,7 @@ public class ControllerMasterTileEntity extends TileEntity implements GuiUpdateH
 
     public void updateSignalDistant() {
         SignalTileEntity signal = getSignal();
-        if (signal.getMode() == SignalMode.AUTO && Signalbox.instance.IR_LOADED) {
+        if (signal != null && signal.getMode() == SignalMode.AUTO && Signalbox.instance.IR_LOADED) {
             if (signal.getOrigin().y == -1) {
                 signal.setOccupationOrigin();
 
@@ -301,7 +314,7 @@ public class ControllerMasterTileEntity extends TileEntity implements GuiUpdateH
 
             signal.setLastTicket(ForgeChunkManager.requestTicket(Signalbox.instance, world, ForgeChunkManager.Type.NORMAL));
             if (signal.getLastTicket() == null) {
-                FMLLog.getLogger().error("Signal failed to load chunk during tick - maybe there are too many signals?");
+                //FMLLog.getLogger().error("Signal failed to load chunk during tick - maybe there are too many signals?");
                 return false;
             }
 
@@ -332,7 +345,7 @@ public class ControllerMasterTileEntity extends TileEntity implements GuiUpdateH
         }
 
         if (signal.getBlocksTravelled() == 0) {
-            EnumFacing signalFacing = world.getBlockState(getPos()).getValue(BaseSignal.FACING).getOpposite();
+            EnumFacing signalFacing = world.getBlockState(signal.getPos()).getValue(BaseSignal.FACING);
             BlockPos current = new BlockPos(signal.getOrigin());
             BlockPos motionBP = current.offset(signalFacing);
 
@@ -342,20 +355,27 @@ public class ControllerMasterTileEntity extends TileEntity implements GuiUpdateH
         for (int i = 0; i < 10; i++) {
             if (signal.getLastLocation() == null) {
                 signal.setLastLocation(signal.getOrigin());
+                signal.updateBlock();
             }
+
+            System.out.println("a");
 
             Vec3d motion = signal.getLastMotion();
 
+            if (motion == null) motion = new Vec3d(0, 0,0);
+
             Vec3d nextLocation = ImmersiveRailroading.getNextPosition(signal.getLastLocation(), motion, world, signal.getLastSwitchInfo());
 
-            if (!doChunkLoad(new BlockPos(nextLocation.x, nextLocation.y, nextLocation.z))) {
+            if (!doChunkLoad(new BlockPos(nextLocation))) {
                 signal.setLastLocation(null);
                 signal.setBlocksTravelled(0);
+                System.out.println("a1");
                 break;
             }
 
             if (ImmersiveRailroading.hasStockNearby(signal.getOrigin(), world) || ImmersiveRailroading.hasStockNearby(nextLocation, world)) {
                 signal.setSignalVariant(getVariantOff());
+                System.out.println("a2");
                 signal.setLastTickTimedOut(false);
                 signal.markDirty();
                 signal.updateBlock();
@@ -371,38 +391,41 @@ public class ControllerMasterTileEntity extends TileEntity implements GuiUpdateH
                     ControllerMasterTileEntity controller = (ControllerMasterTileEntity) Signalbox.instance.getControllerDispatcher().getControllers().get(signal.getFrequency());
 
                     if (masterTESignal.getSignalVariant() == controller.getVariantOn()) {
-                        masterTESignal.setSignalVariant(controller.getVariantOn());
+                        signal.setSignalVariant(controller.getVariantOn());
                     } else if (masterTESignal.getSignalVariant() == controller.getNextOccupied()) {
-                        masterTESignal.setSignalVariant(controller.getVariantOff());
+                        signal.setSignalVariant(controller.getVariantOff());
+                        System.out.println("a3");
                     } else if (masterTESignal.getSignalVariant() == controller.getVariantOff()) {
-                        masterTESignal.setSignalVariant(controller.getNextOccupied());
+                        signal.setSignalVariant(controller.getNextOccupied());
                     } else {
-                        masterTESignal.setSignalVariant(controller.getVariantOff());
+                        signal.setSignalVariant(controller.getVariantOff());
                     }
 
-                    masterTESignal.setLastTickTimedOut(false);
-                    masterTESignal.markDirty();
-                    masterTESignal.setLastLocation(null);
-                    masterTESignal.setBlocksTravelled(0);
+                    signal.setLastTickTimedOut(false);
+                    signal.markDirty();
+                    signal.setLastLocation(null);
+                    signal.setBlocksTravelled(0);
                     break;
                 } else if (world.getBlockState(signal.getEndPoint()._2()).getBlock() instanceof BaseSignal) {
                     SignalTileEntity lastSignal = (SignalTileEntity) world.getTileEntity(signal.getEndPoint()._2());
-                    ControllerMasterTileEntity controller = (ControllerMasterTileEntity) Signalbox.instance.getControllerDispatcher().getControllers().get(signal.getFrequency());
-                    if (controller != null && lastSignal != null) {
+                    ControllerMasterTileEntity controller = (ControllerMasterTileEntity) Signalbox.instance.getControllerDispatcher().getControllers().get(lastSignal.getFrequency());
+                    if (controller != null) {
                         if (lastSignal.getSignalVariant() == controller.getVariantOn()) {
                             signal.setSignalVariant(controller.getVariantOn());
                         } else if (lastSignal.getSignalVariant() == controller.getNextOccupied()) {
                             signal.setSignalVariant(controller.getVariantOff());
+                            System.out.println("a5");
                         } else if (lastSignal.getSignalVariant() == controller.getVariantOff()) {
                             signal.setSignalVariant(controller.getNextOccupied());
                         } else {
                             signal.setSignalVariant(controller.getVariantOff());
+                            System.out.println("a6");
                         }
                     } else {
                         signal.setSignalVariant(getNextOccupied());
                     }
                     signal.setLastTickTimedOut(false);
-                    markDirty();
+                    signal.markDirty();
                     signal.updateBlock();
                     signal.setLastLocation(null);
                     signal.setBlocksTravelled(0);
@@ -414,9 +437,9 @@ public class ControllerMasterTileEntity extends TileEntity implements GuiUpdateH
 
             signal.setBlocksTravelled(signal.getBlocksTravelled() + 1);
             if (signal.getBlocksTravelled() >= 5000 || nextLocation == signal.getLastLocation()) {
-                signal.setSignalVariant(getVariantOff());
+                signal.setSignalVariant(5);
                 signal.setLastTickTimedOut(true);
-                markDirty();
+                signal.markDirty();
                 signal.updateBlock();
                 signal.setLastLocation(null);
                 signal.setBlocksTravelled(0);
@@ -434,5 +457,14 @@ public class ControllerMasterTileEntity extends TileEntity implements GuiUpdateH
 
     public void setNextOccupied(int nextOccupied) {
         this.nextOccupied = nextOccupied;
+    }
+
+    @Override
+    public void update() {
+        if (getSignal() != null && getSignal().getMode() == SignalMode.AUTO) {
+            updateSignalDistant();
+        } else if (getSignal() != null && getSignal().getMode() != SignalMode.AUTO) {
+            updateSignal();
+        }
     }
 }

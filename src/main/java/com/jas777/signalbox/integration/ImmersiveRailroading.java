@@ -8,7 +8,9 @@ import cam72cam.immersiverailroading.tile.TileRail;
 import cam72cam.immersiverailroading.tile.TileRailBase;
 import cam72cam.immersiverailroading.track.IIterableTrack;
 import cam72cam.immersiverailroading.util.SwitchUtil;
+import com.jas777.signalbox.blocks.BaseSignal;
 import com.jas777.signalbox.tileentity.SignalTileEntity;
+import com.jas777.signalbox.util.SignalMast;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -27,9 +29,22 @@ public class ImmersiveRailroading {
     public static Vec3d findOrigin(BlockPos currentPos, EnumFacing signalFacing, World world) {
         Vec3d retVal = new Vec3d(0, -1, 0);
 
-        EnumFacing searchDirection = signalFacing.rotateY().rotateY().rotateY();
+        EnumFacing searchDirection = signalFacing.getOpposite().rotateY().rotateY().rotateY();
 
-        BlockPos workingPos = new BlockPos(currentPos.getX(), currentPos.getY() - 3, currentPos.getZ());
+        BlockPos workingPos = new BlockPos(currentPos);
+
+        boolean correctedPos = false;
+
+        for (int i = 0; i < workingPos.getY(); i++) {
+            if (world.getBlockState(workingPos).getBlock() instanceof SignalMast || world.getBlockState(workingPos).getBlock() instanceof BaseSignal) {
+                workingPos = workingPos.down();
+                correctedPos = true;
+            }
+        }
+
+        if (correctedPos) {
+            workingPos = workingPos.up();
+        }
 
         for (int y = 0; y < 6; y++) {
             for (int i = 0; i <= 10; i++) {
@@ -48,9 +63,10 @@ public class ImmersiveRailroading {
                     retVal = new Vec3d(center.x, center.y, center.z);
                     break;
                 }
+                searchDirection = searchDirection.rotateY();
             }
 
-            workingPos = new BlockPos(currentPos.getX(), workingPos.getY() + 1, currentPos.getZ());
+            //workingPos = new BlockPos(currentPos.getX(), workingPos.getY() + 1, currentPos.getZ());
         }
 
         return retVal;
@@ -142,7 +158,7 @@ public class ImmersiveRailroading {
     }
 
     public static boolean hasStockNearby(Vec3d currentPosition, World world) {
-        BlockPos currentBlockPos = new BlockPos(currentPosition.x, currentPosition.y, currentPosition.z);
+        BlockPos currentBlockPos = new BlockPos(currentPosition);
 
         AxisAlignedBB bb = new AxisAlignedBB(currentBlockPos.south().west(), currentBlockPos.up(3).east().north());
         List<EntityMoveableRollingStock> stocks = world.getEntitiesWithinAABB(EntityMoveableRollingStock.class, bb);

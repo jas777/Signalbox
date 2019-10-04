@@ -181,16 +181,19 @@ public class SignalTileEntity extends TileEntity implements GuiUpdateHandler, Ca
 
     public void setSignalVariant(int signalVariant) {
         this.signalVariant = signalVariant;
+        if (world != null && !world.isRemote) {
+            Signalbox.network.sendToAllAround(new PacketUpdateSignal(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
+        }
     }
 
     @Override
     public void updateBlock() {
         if (world.getBlockState(pos).getBlock() instanceof BaseSignal) {
             HasVariant sVariant = (HasVariant) world.getBlockState(pos).getBlock();
-            world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos).withProperty(sVariant.getSignalVariant(), signalVariant), 2);
             if (!world.isRemote) {
                 Signalbox.network.sendToAllAround(new PacketUpdateSignal(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
             }
+            world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos).withProperty(sVariant.getSignalVariant(), signalVariant), 2);
         }
     }
 
@@ -352,7 +355,7 @@ public class SignalTileEntity extends TileEntity implements GuiUpdateHandler, Ca
     }
 
     void setOccupationOrigin() {
-        EnumFacing signalFacing = world.getBlockState(getPos()).getValue(BaseSignal.FACING).getOpposite();
+        EnumFacing signalFacing = world.getBlockState(getPos()).getValue(BaseSignal.FACING);
 
         BlockPos workingPos = getPos();
         while ((world.getBlockState(workingPos).getBlock() instanceof BaseSignal) || (world.getBlockState(workingPos).getBlock() instanceof SignalMast)) {
@@ -398,8 +401,7 @@ public class SignalTileEntity extends TileEntity implements GuiUpdateHandler, Ca
         return getChannel() + "." + getId();
     }
 
-    public void setOccupationOrigin(BlockPos newPos)
-    {
+    public void setOccupationOrigin(BlockPos newPos) {
         origin = new Vec3d(newPos);
 
         markDirty();
