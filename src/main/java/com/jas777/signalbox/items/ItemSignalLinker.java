@@ -74,7 +74,6 @@ public class ItemSignalLinker extends BaseItem {
         if (player.isSneaking()) {
             if (tag.hasKey("pairingpos")) {
                 tag.removeTag("pairingpos");
-                ;
                 player.sendMessage(new TextComponentString("Unpaired from Signal"));
             }
 

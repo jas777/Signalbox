@@ -29,7 +29,7 @@ public class ImmersiveRailroading {
     public static Vec3d findOrigin(BlockPos currentPos, EnumFacing signalFacing, World world) {
         Vec3d retVal = new Vec3d(0, -1, 0);
 
-        EnumFacing searchDirection = signalFacing.getOpposite().rotateY().rotateY().rotateY();
+        EnumFacing searchDirection = signalFacing.getOpposite();
 
         BlockPos workingPos = new BlockPos(currentPos);
 
@@ -46,27 +46,30 @@ public class ImmersiveRailroading {
             workingPos = workingPos.up();
         }
 
-        for (int y = 0; y < 6; y++) {
-            for (int i = 0; i <= 10; i++) {
-                workingPos = workingPos.offset(searchDirection);
+        boolean found = false;
 
-                if (world.getBlockState(workingPos).getBlock() instanceof BlockRailBase) {
+        for (int y = 0; y < 10; y++) {
+            if (found) break;
+            for (int i = 0; i < 3; i++) {
+                if (world.getBlockState(workingPos.offset(searchDirection)).getBlock() instanceof BlockRailBase) {
                     TileRailBase tile = (TileRailBase) world.getTileEntity(workingPos);
                     if (tile == null) {
                         continue;
                     }
-
                     Vec3d current = new Vec3d(workingPos.getX(), workingPos.getY(), workingPos.getZ());
 
                     Vec3d center = tile.getNextPosition(current, new Vec3d(0, 0, 0));
 
                     retVal = new Vec3d(center.x, center.y, center.z);
-                    break;
-                }
-                searchDirection = searchDirection.rotateY();
-            }
 
-            //workingPos = new BlockPos(currentPos.getX(), workingPos.getY() + 1, currentPos.getZ());
+                    found = true;
+
+                    break;
+                } else {
+                    searchDirection = searchDirection.rotateY();
+                }
+            }
+            workingPos = new BlockPos(currentPos.getX(), workingPos.getY() - 1, currentPos.getZ());
         }
 
         return retVal;
