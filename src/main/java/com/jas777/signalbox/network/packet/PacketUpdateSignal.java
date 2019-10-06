@@ -79,9 +79,9 @@ public class PacketUpdateSignal implements IMessage {
                 te.setId(message.id);
                 te.setSignalVariant(message.variant);
                 te.setMode(SignalMode.values()[message.mode]);
-                te.setOrigin(new Vec3d(message.origin));
-                te.setLastLocation(new Vec3d(message.lastLocation));
-                te.setLastMotion(new Vec3d(message.lastMotion));
+                te.setOrigin(message.origin == null ? null : new Vec3d(message.origin));
+                te.setLastLocation(message.lastLocation == null ? null : new Vec3d(message.lastLocation));
+                te.setLastMotion(message.lastMotion == null ? null : new Vec3d(message.lastMotion));
                 te.setBlocksTravelled(message.blocksTravelled);
             });
             return null;

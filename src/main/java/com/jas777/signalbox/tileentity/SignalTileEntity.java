@@ -181,19 +181,27 @@ public class SignalTileEntity extends TileEntity implements GuiUpdateHandler, Ca
 
     public void setSignalVariant(int signalVariant) {
         this.signalVariant = signalVariant;
-        if (world != null && !world.isRemote) {
-            Signalbox.network.sendToAllAround(new PacketUpdateSignal(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
-        }
     }
 
     @Override
     public void updateBlock() {
+        updateSignal();
+    }
+
+    public void updateVariant() {
         if (world.getBlockState(pos).getBlock() instanceof BaseSignal) {
             HasVariant sVariant = (HasVariant) world.getBlockState(pos).getBlock();
-            if (!world.isRemote) {
-                Signalbox.network.sendToAllAround(new PacketUpdateSignal(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
-            }
             world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos).withProperty(sVariant.getSignalVariant(), signalVariant), 2);
+        }
+    }
+
+    public void updateSignal() {
+        if (world.getBlockState(pos).getBlock() instanceof BaseSignal) {
+            HasVariant sVariant = (HasVariant) world.getBlockState(pos).getBlock();
+            if (getSignalVariant() != world.getBlockState(pos).getValue(sVariant.getSignalVariant())) updateVariant();
+        }
+        if (!world.isRemote) {
+            Signalbox.network.sendToAllAround(new PacketUpdateSignal(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
         }
     }
 
@@ -229,10 +237,6 @@ public class SignalTileEntity extends TileEntity implements GuiUpdateHandler, Ca
 
         this.id = id;
 
-        if (!world.isRemote) {
-            Signalbox.network.sendToAllAround(new PacketUpdateSignal(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
-        }
-
     }
 
     @Override
@@ -261,10 +265,6 @@ public class SignalTileEntity extends TileEntity implements GuiUpdateHandler, Ca
 
         this.channel = channel;
 
-        if (!world.isRemote) {
-            Signalbox.network.sendToAllAround(new PacketUpdateSignal(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
-        }
-
     }
 
     @Nullable
@@ -292,9 +292,6 @@ public class SignalTileEntity extends TileEntity implements GuiUpdateHandler, Ca
 
     public void setActive(boolean active) {
         world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos).withProperty(BaseSignal.ACTIVE, active), 2);
-        if (!world.isRemote) {
-            Signalbox.network.sendToAllAround(new PacketUpdateSignal(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
-        }
     }
 
     public SignalMode getMode() {
@@ -304,9 +301,6 @@ public class SignalTileEntity extends TileEntity implements GuiUpdateHandler, Ca
     public void setMode(SignalMode mode) {
         this.mode = mode;
         markDirty();
-        if (!world.isRemote) {
-            Signalbox.network.sendToAllAround(new PacketUpdateSignal(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
-        }
     }
 
 
@@ -355,13 +349,18 @@ public class SignalTileEntity extends TileEntity implements GuiUpdateHandler, Ca
     }
 
     void setOccupationOrigin() {
+        if (!(world.getBlockState(getPos()).getBlock() instanceof BaseSignal)) return;
         EnumFacing signalFacing = world.getBlockState(getPos()).getValue(BaseSignal.FACING);
 
         BlockPos workingPos = getPos();
+        boolean correctedPos = false;
         while ((world.getBlockState(workingPos).getBlock() instanceof BaseSignal) || (world.getBlockState(workingPos).getBlock() instanceof SignalMast)) {
             workingPos = workingPos.down();
+            correctedPos = true;
         }
-        workingPos = workingPos.up();
+        if (correctedPos) {
+            workingPos = workingPos.up();
+        }
         Vec3d origin = ImmersiveRailroading.findOrigin(workingPos, signalFacing, world);
 
         boolean willNotify = this.origin.y != origin.y;
@@ -369,7 +368,7 @@ public class SignalTileEntity extends TileEntity implements GuiUpdateHandler, Ca
         markDirty();
 
         if (willNotify) {
-            updateBlock();
+            updateSignal();
         }
     }
 
@@ -405,7 +404,6 @@ public class SignalTileEntity extends TileEntity implements GuiUpdateHandler, Ca
         origin = new Vec3d(newPos);
 
         markDirty();
-        updateBlock();
     }
 
     public static class LastSwitchInfo {

@@ -29,8 +29,6 @@ public class ImmersiveRailroading {
     public static Vec3d findOrigin(BlockPos currentPos, EnumFacing signalFacing, World world) {
         Vec3d retVal = new Vec3d(0, -1, 0);
 
-        EnumFacing searchDirection = signalFacing.getOpposite();
-
         BlockPos workingPos = new BlockPos(currentPos);
 
         boolean correctedPos = false;
@@ -42,34 +40,37 @@ public class ImmersiveRailroading {
             }
         }
 
-        if (correctedPos) {
+        if (correctedPos && !(world.getBlockState(workingPos).getBlock() instanceof SignalMast || world.getBlockState(workingPos).getBlock() instanceof BaseSignal)) {
             workingPos = workingPos.up();
         }
 
-        boolean found = false;
+//        boolean found = false;
 
-        for (int y = 0; y < 10; y++) {
-            if (found) break;
-            for (int i = 0; i < 3; i++) {
-                if (world.getBlockState(workingPos.offset(searchDirection)).getBlock() instanceof BlockRailBase) {
-                    TileRailBase tile = (TileRailBase) world.getTileEntity(workingPos);
-                    if (tile == null) {
-                        continue;
-                    }
-                    Vec3d current = new Vec3d(workingPos.getX(), workingPos.getY(), workingPos.getZ());
-
-                    Vec3d center = tile.getNextPosition(current, new Vec3d(0, 0, 0));
-
-                    retVal = new Vec3d(center.x, center.y, center.z);
-
-                    found = true;
-
-                    break;
-                } else {
-                    searchDirection = searchDirection.rotateY();
+        Vec3d center;
+        for (EnumFacing direction : EnumFacing.HORIZONTALS) {
+            if (world.getBlockState(workingPos.offset(direction)).getBlock() instanceof BlockRailBase) {
+                workingPos = workingPos.offset(direction);
+                TileRailBase tile = (TileRailBase) world.getTileEntity(workingPos);
+                if (tile == null) {
+                    continue;
                 }
+                Vec3d current = new Vec3d(workingPos.getX(), workingPos.getY(), workingPos.getZ());
+
+                center = tile.getNextPosition(current, new Vec3d(0, 0, 0));
+
+                if (center != null) return center;
+            } else if (world.getBlockState(workingPos.offset(direction).offset(direction)).getBlock() instanceof BlockRailBase) {
+                workingPos = workingPos.offset(direction).offset(direction);
+                TileRailBase tile = (TileRailBase) world.getTileEntity(workingPos);
+                if (tile == null) {
+                    continue;
+                }
+                Vec3d current = new Vec3d(workingPos.getX(), workingPos.getY(), workingPos.getZ());
+
+                center = tile.getNextPosition(current, new Vec3d(0, 0, 0));
+
+                if (center != null) return center;
             }
-            workingPos = new BlockPos(currentPos.getX(), workingPos.getY() - 1, currentPos.getZ());
         }
 
         return retVal;
