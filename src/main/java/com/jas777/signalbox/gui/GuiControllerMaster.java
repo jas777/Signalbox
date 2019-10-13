@@ -41,6 +41,8 @@ public class GuiControllerMaster extends GuiScreen {
     private final int TEXT_CHANNEL = 4;
     private final int TEXT_ID = 5;
 
+    private int BUTTON_SAVE = 6;
+
     private final int guiWidth = 248;
     private final int guiHeight = 166;
 
@@ -51,6 +53,7 @@ public class GuiControllerMaster extends GuiScreen {
 
     private SignalTileEntity signal;
     private ChannelDispatcher dispatcher;
+    private GuiButton buttonSave;
 
     public GuiControllerMaster(ControllerMasterTileEntity tile) {
         this.tile = tile;
@@ -94,6 +97,8 @@ public class GuiControllerMaster extends GuiScreen {
 
             buttonVariantOffPlus.drawButton(mc, mouseX, mouseY, partialTicks);
             buttonVariantOffMinus.drawButton(mc, mouseX, mouseY, partialTicks);
+
+            buttonSave.drawButton(mc, mouseX, mouseY, partialTicks);
 
             if (Integer.parseInt(channelTextField.getText()) <= 0 || displayOnFrequency) {
                 channelTextField.setTextColor(Color.RED.getRGB());
@@ -148,6 +153,8 @@ public class GuiControllerMaster extends GuiScreen {
 
         buttonList.add(buttonVariantOffPlus = new GuiButton(BUTTON_VARIANT_OFF_PLUS, centerX + variantOffStringLength + 15, centerY + 69 - halfFontHeight, 20, 20, "+"));
         buttonList.add(buttonVariantOffMinus = new GuiButton(BUTTON_VARIANT_OFF_MINUS, centerX + variantOffStringLength + 40, centerY + 69 - halfFontHeight, 20, 20, "-"));
+
+        buttonList.add(buttonSave = new GuiButton(BUTTON_SAVE, centerX + 202, centerY + 140, 40, 20, "Save"));
 
         channelTextField = new GuiTextField(TEXT_CHANNEL, fontRenderer, centerX + 5, centerY + 104, 50, fontRenderer.FONT_HEIGHT + 2);
         idTextField = new GuiTextField(TEXT_ID, fontRenderer, centerX + 5, centerY + 124, 50, fontRenderer.FONT_HEIGHT + 2);

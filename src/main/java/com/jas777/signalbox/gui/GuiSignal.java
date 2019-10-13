@@ -27,9 +27,11 @@ public class GuiSignal extends GuiScreen {
 
     private GuiButton buttonModePlus;
     private GuiButton buttonModeMinus;
+    private GuiButton buttonSave;
 
     private final int BUTTON_MODE_PLUS = 0;
     private final int BUTTON_MODE_MINUS = 1;
+    private final int BUTTON_SAVE = 2;
 
     private TextureAtlasSprite sprite;
 
@@ -41,7 +43,7 @@ public class GuiSignal extends GuiScreen {
     private final int guiWidth = 248;
     private final int guiHeight = 166;
 
-    private int variantOnStringLength;
+    private int modeStringLength;
 
     public GuiSignal(SignalTileEntity tile) {
         this.tile = tile;
@@ -82,8 +84,11 @@ public class GuiSignal extends GuiScreen {
                 channelTextField.setTextColor(Color.WHITE.getRGB());
             }
 
+            fontRenderer.drawString("Mode: " + tile.getMode().getName(), centerX + 30, centerY + 30, 0);
+
             buttonModePlus.drawButton(mc, mouseX, mouseY, partialTicks);
             buttonModeMinus.drawButton(mc, mouseX, mouseY, partialTicks);
+            buttonSave.drawButton(mc, mouseX, mouseY, partialTicks);
 
             channelTextField.drawTextBox();
             idTextField.drawTextBox();
@@ -99,7 +104,6 @@ public class GuiSignal extends GuiScreen {
                 sprite.updateAnimation();
             }
         }
-        GlStateManager.popMatrix();
 
     }
 
@@ -110,13 +114,15 @@ public class GuiSignal extends GuiScreen {
         int centerY = (height / 2) - guiHeight / 2;
 
         if (tile == null) mc.displayGuiScreen(null);
+        modeStringLength = fontRenderer.getStringWidth("Mode: " + tile.getMode().getName());
 
         buttonList.clear();
 
         int halfFontHeight = fontRenderer.FONT_HEIGHT / 2;
 
-        buttonList.add(buttonModePlus = new GuiButton(BUTTON_MODE_PLUS, centerX + variantOnStringLength + 15, centerY + 29 - halfFontHeight, 20, 20, "+"));
-        buttonList.add(buttonModeMinus = new GuiButton(BUTTON_MODE_MINUS, centerX + variantOnStringLength + 40, centerY + 29 - halfFontHeight, 20, 20, "-"));
+        buttonList.add(buttonModePlus = new GuiButton(BUTTON_MODE_PLUS, centerX + 5, centerY + 29 - halfFontHeight, 20, 20, "+"));
+        buttonList.add(buttonModeMinus = new GuiButton(BUTTON_MODE_MINUS, centerX + modeStringLength + 35, centerY + 29 - halfFontHeight, 20, 20, "-"));
+        buttonList.add(buttonSave = new GuiButton(BUTTON_SAVE, centerX + 202, centerY + 140, 40, 20, "Save"));
 
         channelTextField = new GuiTextField(TEXT_CHANNEL, fontRenderer, centerX + 5, centerY + 94, 50, fontRenderer.FONT_HEIGHT + 2);
         idTextField = new GuiTextField(TEXT_ID, fontRenderer, centerX + 5, centerY + 114, 50, fontRenderer.FONT_HEIGHT + 2);

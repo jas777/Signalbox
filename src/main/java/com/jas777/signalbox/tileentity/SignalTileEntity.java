@@ -2,7 +2,6 @@ package com.jas777.signalbox.tileentity;
 
 import com.jas777.signalbox.Signalbox;
 import com.jas777.signalbox.blocks.BaseSignal;
-import com.jas777.signalbox.channel.Channel;
 import com.jas777.signalbox.gui.GuiUpdateHandler;
 import com.jas777.signalbox.integration.ImmersiveRailroading;
 import com.jas777.signalbox.network.packet.PacketRequestUpdateSignal;
@@ -10,10 +9,7 @@ import com.jas777.signalbox.network.packet.PacketUpdateSignal;
 import com.jas777.signalbox.network.signalpacket.SignalboxInputStream;
 import com.jas777.signalbox.network.signalpacket.SignalboxOutputStream;
 import com.jas777.signalbox.signal.SignalMode;
-import com.jas777.signalbox.util.CanBePowered;
-import com.jas777.signalbox.util.CanReceive;
-import com.jas777.signalbox.util.HasVariant;
-import com.jas777.signalbox.util.SignalMast;
+import com.jas777.signalbox.util.*;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -33,7 +29,7 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Collections;
 
-public class SignalTileEntity extends TileEntity implements GuiUpdateHandler, CanBePowered, CanReceive {
+public class SignalTileEntity extends TileEntity implements GuiUpdateHandler, CanBePowered, CanReceive, SignalboxTileEntity {
 
     private int channel = 0;
     private int id = 0;
@@ -114,21 +110,7 @@ public class SignalTileEntity extends TileEntity implements GuiUpdateHandler, Ca
     @Override
     public void onLoad() {
         if (channel != 0 && id != 0) {
-
-            Channel dispatchChannel = Signalbox.instance.getChannelDispatcher().getChannels().get(channel);
-
-            if (dispatchChannel == null) {
-                Signalbox.instance.getChannelDispatcher().getChannels().put(channel, new Channel());
-                Channel newChannel = Signalbox.instance.getChannelDispatcher().getChannels().get(channel);
-                newChannel.getReceivers().put(id, pos);
-            } else {
-                if (dispatchChannel.getReceivers().containsKey(this.id)) {
-                    dispatchChannel.getReceivers().remove(pos);
-                    dispatchChannel.getReceivers().put(id, pos);
-                } else {
-                    dispatchChannel.getReceivers().put(id, pos);
-                }
-            }
+            Signalbox.instance.getChannelDispatcher().tune(channel, id, pos);
         }
         if (world.isRemote) {
             Signalbox.network.sendToServer(new PacketRequestUpdateSignal(this));
@@ -148,8 +130,6 @@ public class SignalTileEntity extends TileEntity implements GuiUpdateHandler, Ca
     public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet) {
         super.onDataPacket(net, packet);
         this.readFromNBT(packet.getNbtCompound());
-        HasVariant sVariant = (HasVariant) world.getBlockState(pos).getBlock();
-        world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos).withProperty(sVariant.getSignalVariant(), signalVariant), 2);
         if (!world.isRemote) {
             Signalbox.network.sendToAllAround(new PacketUpdateSignal(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
         }
@@ -177,6 +157,7 @@ public class SignalTileEntity extends TileEntity implements GuiUpdateHandler, Ca
     @Override
     public void setData(ByteBuf data) {
         setSignalVariant(data.readInt());
+        updateSignal();
     }
 
     public void setSignalVariant(int signalVariant) {
@@ -196,12 +177,12 @@ public class SignalTileEntity extends TileEntity implements GuiUpdateHandler, Ca
     }
 
     public void updateSignal() {
-        if (world.getBlockState(pos).getBlock() instanceof BaseSignal) {
-            HasVariant sVariant = (HasVariant) world.getBlockState(pos).getBlock();
-            if (getSignalVariant() != world.getBlockState(pos).getValue(sVariant.getSignalVariant())) updateVariant();
-        }
         if (!world.isRemote) {
             Signalbox.network.sendToAllAround(new PacketUpdateSignal(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
+        }
+        if (world.getBlockState(pos).getBlock() instanceof BaseSignal) {
+            HasVariant sVariant = (HasVariant) world.getBlockState(pos).getBlock();
+            world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos).withProperty(sVariant.getSignalVariant(), signalVariant), 2);
         }
     }
 
@@ -217,54 +198,16 @@ public class SignalTileEntity extends TileEntity implements GuiUpdateHandler, Ca
 
     @Override
     public void setId(int id) {
-
-        if (channel == 0) return;
-
-        Channel dispatchChannel = Signalbox.instance.getChannelDispatcher().getChannels().get(channel);
-
-        if (dispatchChannel == null) {
-            Signalbox.instance.getChannelDispatcher().getChannels().put(channel, new Channel());
-            Channel newChannel = Signalbox.instance.getChannelDispatcher().getChannels().get(channel);
-            newChannel.getReceivers().put(id, pos);
-        } else {
-            if (dispatchChannel.getReceivers().containsKey(this.id)) {
-                dispatchChannel.getReceivers().remove(pos);
-                dispatchChannel.getReceivers().put(id, pos);
-            } else {
-                dispatchChannel.getReceivers().put(id, pos);
-            }
-        }
-
+        if (channel == 0 || id < 0) return;
+        Signalbox.instance.getChannelDispatcher().tune(channel, id, pos);
         this.id = id;
-
     }
 
     @Override
     public void setChannel(int channel) {
-
-        if (channel == 0) return;
-
-        Channel dispatchChannel = Signalbox.instance.getChannelDispatcher().getChannels().get(this.channel);
-
-        if (dispatchChannel == null) {
-            Signalbox.instance.getChannelDispatcher().getChannels().put(channel, new Channel());
-            Channel newChannel = Signalbox.instance.getChannelDispatcher().getChannels().get(channel);
-            newChannel.getReceivers().put(id, pos);
-        } else {
-            if (Signalbox.instance.getChannelDispatcher().getChannels().get(channel) == null) {
-                Signalbox.instance.getChannelDispatcher().getChannels().put(channel, new Channel());
-                Channel newChannel = Signalbox.instance.getChannelDispatcher().getChannels().get(channel);
-                newChannel.getReceivers().put(id, pos);
-            } else {
-                dispatchChannel.getReceivers().remove(pos);
-                Signalbox.instance.getChannelDispatcher().getChannels().put(channel, new Channel());
-                Channel newChannel = Signalbox.instance.getChannelDispatcher().getChannels().get(channel);
-                newChannel.getReceivers().put(id, pos);
-            }
-        }
-
+        if (channel == 0 || id < 0) return;
+        Signalbox.instance.getChannelDispatcher().tune(channel, id, pos);
         this.channel = channel;
-
     }
 
     @Nullable

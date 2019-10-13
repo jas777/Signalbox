@@ -32,6 +32,9 @@ public class BaseBlock extends Block implements HasModel {
         setRegistryName(name);
         setCreativeTab(CreativeTabs.TRANSPORTATION);
 
+        setHardness(3.5F);
+        setResistance(5.0F);
+
         ModBlocks.BLOCKS.add(this);
         ModItems.ITEMS.add(new ItemBlock(this).setRegistryName(this.getRegistryName()));
     }

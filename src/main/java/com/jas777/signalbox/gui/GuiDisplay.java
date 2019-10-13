@@ -6,6 +6,7 @@ import com.jas777.signalbox.network.signalpacket.PacketGuiReturn;
 import com.jas777.signalbox.tileentity.DisplayTileEntity;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.GlStateManager;
@@ -23,12 +24,15 @@ public class GuiDisplay extends GuiScreen {
     private GuiTextField channelTextField;
     private GuiTextField idTextField;
 
+    private GuiButton buttonSave;
+
     private TextureAtlasSprite sprite;
 
     private final ResourceLocation texture = new ResourceLocation(Signalbox.MODID, "textures/gui/controller_background.png");
 
-    private final int TEXT_CHANNEL = 1;
-    private final int TEXT_ID = 2;
+    private final int TEXT_CHANNEL = 0;
+    private final int TEXT_ID = 1;
+    private final int BUTTON_SAVE = 2;
 
     private final int guiWidth = 248;
     private final int guiHeight = 166;
@@ -75,6 +79,8 @@ public class GuiDisplay extends GuiScreen {
             channelTextField.drawTextBox();
             idTextField.drawTextBox();
 
+            buttonSave.drawButton(mc, mouseX, mouseY, partialTicks);
+
             fontRenderer.drawString("Channel", centerX + 60, centerY + 96, 0x000000);
             fontRenderer.drawString("Display ID", centerX + 60, centerY + 116, 0x000000);
         }
@@ -102,6 +108,7 @@ public class GuiDisplay extends GuiScreen {
 
         channelTextField = new GuiTextField(TEXT_CHANNEL, fontRenderer, centerX + 5, centerY + 94, 50, fontRenderer.FONT_HEIGHT + 2);
         idTextField = new GuiTextField(TEXT_ID, fontRenderer, centerX + 5, centerY + 114, 50, fontRenderer.FONT_HEIGHT + 2);
+        buttonList.add(buttonSave = new GuiButton(BUTTON_SAVE, centerX + 202, centerY + 140, 40, 20, "Save"));
 
         channelTextField.setValidator(NumberUtils::isCreatable);
         idTextField.setValidator(NumberUtils::isCreatable);

@@ -98,10 +98,12 @@ public class BaseSignal extends BaseBlock {
             if (worldIn.isBlockPowered(pos)) {
                 CanBePowered tileEntity = (CanBePowered) worldIn.getTileEntity(pos);
                 tileEntity.setActive(true);
+                blockIn.setLightLevel(15F);
                 worldIn.setBlockState(pos, state.withProperty(ACTIVE, Boolean.TRUE), 2);
             } else {
                 CanBePowered tileEntity = (CanBePowered) worldIn.getTileEntity(pos);
                 tileEntity.setActive(false);
+                blockIn.setLightLevel(0F);
                 worldIn.setBlockState(pos, state.withProperty(ACTIVE, Boolean.FALSE), 2);
             }
         }
@@ -128,11 +130,6 @@ public class BaseSignal extends BaseBlock {
     }
 
     @Override
-    public int getLightValue(IBlockState state) {
-        return 15;
-    }
-
-    @Override
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (worldIn.isRemote) {
             Minecraft.getMinecraft().displayGuiScreen(new GuiSignal((SignalTileEntity) worldIn.getTileEntity(pos)));
@@ -144,4 +141,10 @@ public class BaseSignal extends BaseBlock {
     public float getAmbientOcclusionLightValue(IBlockState state) {
         return 3F;
     }
+
+    @Override
+    public int getLightValue(IBlockState state, IBlockAccess world, BlockPos pos) {
+        return state.getValue(ACTIVE) ? 15 : 0;
+    }
+
 }

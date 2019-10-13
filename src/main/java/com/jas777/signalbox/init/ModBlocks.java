@@ -8,6 +8,7 @@ import com.jas777.signalbox.blocks.de.vorsignal.*;
 import com.jas777.signalbox.blocks.de.vorsignal.hv.BlockHvVorsignalHead;
 import com.jas777.signalbox.blocks.de.vorsignal.kompakt.BlockKompaktvorsignalHead;
 import com.jas777.signalbox.blocks.controller.BlockController;
+import com.jas777.signalbox.blocks.fi.BlockMainSignalHead;
 import net.minecraft.block.Block;
 
 import java.util.ArrayList;
@@ -39,5 +40,9 @@ public class ModBlocks {
 
     public static final Block DE_KS_MEHRFACHSSIGNAL_HEAD = new BlockKsMehrfachssignalHead();
     public static final Block DE_KS_MEHRFACHSSIGNAL_ZS3 = new BlockKsMehrfachssignalZs3();
+
+    // FI
+
+    public static final Block FI_MAIN_SIGNAL_HEAD = new BlockMainSignalHead();
 
 }

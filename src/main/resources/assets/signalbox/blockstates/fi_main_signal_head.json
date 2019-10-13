@@ -1,0 +1,54 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "signalbox:fi_main_signal_head",
+    "textures": {
+      "lamp_1": "blocks/concrete_black",
+      "lamp_2": "signalbox:blocks/red",
+      "lamp_3": "blocks/concrete_black"
+    }
+  },
+  "variants": {
+    "normal": [{}],
+    "facing": {
+      "north": {},
+      "south": {"y": 180},
+      "east":  {"y": 90},
+      "west":  {"y": -90}
+    },
+    "active": {
+      "true": {},
+      "false": {
+        "textures": {
+          "lamp_1": "blocks/concrete_black",
+          "lamp_2": "blocks/concrete_black",
+          "lamp_3": "blocks/concrete_black"
+        }
+      }
+    },
+    "signal_variant": {
+      "0": {
+        "textures": {
+          "lamp_1": "blocks/concrete_black",
+          "lamp_2": "signalbox:blocks/red",
+          "lamp_3": "blocks/concrete_black"
+        }
+      },
+      "1": {
+        "textures": {
+          "lamp_1": "signalbox:blocks/green_light",
+          "lamp_2": "blocks/concrete_black",
+          "lamp_3": "blocks/concrete_black"
+        }
+      },
+      "2": {
+        "textures": {
+          "lamp_1": "signalbox:blocks/green_light",
+          "lamp_2": "blocks/concrete_black",
+          "lamp_3": "signalbox:blocks/amber"
+        }
+      }
+    },
+    "inventory": [{}]
+  }
+}

@@ -23,6 +23,7 @@ public class GuiControllerDisplay extends GuiScreen {
 
     private GuiButton buttonSpeedLimitPlus;
     private GuiButton buttonSpeedLimitMinus;
+    private GuiButton buttonSave;
 
     private GuiTextField channelTextField;
     private GuiTextField idTextField;
@@ -31,6 +32,7 @@ public class GuiControllerDisplay extends GuiScreen {
 
     private final int BUTTON_VARIANT_PLUS = 0;
     private final int BUTTON_VARIANT_MINUS = 1;
+    private int BUTTON_SAVE = 2;
 
     private final int TEXT_CHANNEL = 4;
     private final int TEXT_ID = 5;
@@ -75,6 +77,7 @@ public class GuiControllerDisplay extends GuiScreen {
 
             buttonSpeedLimitPlus.drawButton(mc, mouseX, mouseY, partialTicks);
             buttonSpeedLimitMinus.drawButton(mc, mouseX, mouseY, partialTicks);
+            buttonSave.drawButton(mc, mouseX, mouseY, partialTicks);
 
             if (Integer.parseInt(channelTextField.getText()) <= 0) {
                 channelTextField.setTextColor(Color.RED.getRGB());
@@ -120,6 +123,8 @@ public class GuiControllerDisplay extends GuiScreen {
 
         buttonList.add(buttonSpeedLimitPlus = new GuiButton(BUTTON_VARIANT_PLUS, centerX + speedLimitStringLength + 15, centerY + 29 - halfFontHeight, 20, 20, "+"));
         buttonList.add(buttonSpeedLimitMinus = new GuiButton(BUTTON_VARIANT_MINUS, centerX + speedLimitStringLength + 40, centerY + 29 - halfFontHeight, 20, 20, "-"));
+
+        buttonList.add(buttonSave = new GuiButton(BUTTON_SAVE, centerX + 202, centerY + 140, 40, 20, "Save"));
 
         channelTextField = new GuiTextField(TEXT_CHANNEL, fontRenderer, centerX + 5, centerY + 94, 50, fontRenderer.FONT_HEIGHT + 2);
         idTextField = new GuiTextField(TEXT_ID, fontRenderer, centerX + 5, centerY + 114, 50, fontRenderer.FONT_HEIGHT + 2);

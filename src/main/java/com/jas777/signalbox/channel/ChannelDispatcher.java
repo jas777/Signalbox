@@ -59,5 +59,18 @@ public class ChannelDispatcher {
         return null;
     }
 
+    public boolean tune(int channel, int id, BlockPos pos) {
+
+        if (!channels.containsKey(channel)) {
+            channels.put(channel, new Channel());
+        }
+
+        channels.forEach((i, c) -> {
+            c.removeReceiver(id, pos);
+        });
+
+        Channel dispatchToTune = channels.get(channel);
+        return dispatchToTune.addReceiver(id, pos);
+    }
 
 }

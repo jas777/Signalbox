@@ -14,6 +14,7 @@ import com.jas777.signalbox.signal.SignalMode;
 import com.jas777.signalbox.util.CanBePowered;
 import com.jas777.signalbox.util.Controller;
 import com.jas777.signalbox.util.HasVariant;
+import com.jas777.signalbox.util.SignalboxTileEntity;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -38,7 +39,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class ControllerMasterTileEntity extends TileEntity implements ITickable, GuiUpdateHandler, CanBePowered, Controller {
+public class ControllerMasterTileEntity extends TileEntity implements ITickable, GuiUpdateHandler, CanBePowered, Controller, SignalboxTileEntity {
 
     private boolean active;
     private int channel = 0;
@@ -131,17 +132,15 @@ public class ControllerMasterTileEntity extends TileEntity implements ITickable,
         world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos), 2);
     }
 
-    public void updateSignal() {
+    public void updateSignal(int variant) {
         if (getSignal() == null)
             return;
 
         if (getSignal() != null) {
             if (isActive()) {
-                if (getSignal().getMode() == SignalMode.AUTO) return;
-                Signalbox.instance.getChannelDispatcher().dispatchMessage(world, getChannel(), getId(), getVariantOn());
+                Signalbox.instance.getChannelDispatcher().dispatchMessage(world, getChannel(), getId(), variant);
             } else {
-                if (getSignal().getMode() == SignalMode.AUTO) return;
-                Signalbox.instance.getChannelDispatcher().dispatchMessage(world, getChannel(), getId(), getVariantOff());
+                Signalbox.instance.getChannelDispatcher().dispatchMessage(world, getChannel(), getId(), variant);
             }
         }
         markDirty();
@@ -172,7 +171,7 @@ public class ControllerMasterTileEntity extends TileEntity implements ITickable,
         if (!world.isRemote) {
             Signalbox.network.sendToAllAround(new PacketUpdateControllerMaster(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
         }
-        updateSignal();
+        updateSignal(isActive() ? getVariantOn() : getVariantOff());
     }
 
     public void setId(int id) {
@@ -184,7 +183,7 @@ public class ControllerMasterTileEntity extends TileEntity implements ITickable,
         if (!world.isRemote) {
             Signalbox.network.sendToAllAround(new PacketUpdateControllerMaster(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
         }
-        updateSignal();
+        updateSignal(isActive() ? getVariantOn() : getVariantOff());
     }
 
     public void setVariantOn(int variant) {
@@ -192,7 +191,7 @@ public class ControllerMasterTileEntity extends TileEntity implements ITickable,
         if (!world.isRemote) {
             Signalbox.network.sendToAllAround(new PacketUpdateControllerMaster(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
         }
-        updateSignal();
+        updateSignal(isActive() ? getVariantOn() : getVariantOff());
     }
 
     public void setVariantOff(int variantOff) {
@@ -200,7 +199,7 @@ public class ControllerMasterTileEntity extends TileEntity implements ITickable,
         if (!world.isRemote) {
             Signalbox.network.sendToAllAround(new PacketUpdateControllerMaster(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
         }
-        updateSignal();
+        updateSignal(isActive() ? getVariantOn() : getVariantOff());
     }
 
     public int getMaxVariant() {
@@ -238,7 +237,7 @@ public class ControllerMasterTileEntity extends TileEntity implements ITickable,
         if (!world.isRemote) {
             Signalbox.network.sendToAllAround(new PacketUpdateControllerMaster(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
         }
-        updateSignal();
+        updateSignal(isActive() ? getVariantOn() : getVariantOff());
     }
 
     @Override
@@ -291,16 +290,47 @@ public class ControllerMasterTileEntity extends TileEntity implements ITickable,
                 }
             }
 
-            doNormalTick();
+            int tickResult = doNormalTick();
+
+            switch (tickResult) {
+                case -1:
+                    signal.updateSignal();
+                    break;
+                default:
+                    updateSignal(tickResult);
+                    break;
+            }
+
         }
     }
 
     private boolean doChunkLoad(BlockPos nextPos) {
-        Chunk chunk = world.getChunkFromBlockCoords(nextPos);
-        SignalTileEntity signal = getSignal();
-        if (signal == null) return false;
-        if (!chunk.isLoaded()) {
-            if (signal.getLastTicket() != null) {
+        if (!world.isRemote) {
+            Chunk chunk = world.getChunkFromBlockCoords(nextPos);
+            SignalTileEntity signal = getSignal();
+            if (signal == null) return false;
+            if (!chunk.isLoaded()) {
+                if (signal.getLastTicket() != null) {
+                    ChunkPos lastChunkPos = null;
+                    for (ChunkPos pos : signal.getLastTicket().getChunkList()) {
+                        lastChunkPos = pos;
+                        break;
+                    }
+
+                    ForgeChunkManager.unforceChunk(signal.getLastTicket(), lastChunkPos);
+                    ForgeChunkManager.releaseTicket(signal.getLastTicket());
+                }
+
+                ForgeChunkManager.Ticket ticket = ForgeChunkManager.requestTicket(Signalbox.instance, world, ForgeChunkManager.Type.NORMAL);
+
+                signal.setLastTicket(ticket);
+                if (signal.getLastTicket() == null) {
+                    //FMLLog.getLogger().error("Signal failed to load chunk during tick - maybe there are too many signals?");
+                    return false;
+                }
+
+                ForgeChunkManager.forceChunk(signal.getLastTicket(), new ChunkPos(chunk.x, chunk.z));
+            } else if (signal.getLastTicket() != null && !signal.getLastTicket().getChunkList().contains(new ChunkPos(chunk.x, chunk.z))) {
                 ChunkPos lastChunkPos = null;
                 for (ChunkPos pos : signal.getLastTicket().getChunkList()) {
                     lastChunkPos = pos;
@@ -310,48 +340,26 @@ public class ControllerMasterTileEntity extends TileEntity implements ITickable,
                 ForgeChunkManager.unforceChunk(signal.getLastTicket(), lastChunkPos);
                 ForgeChunkManager.releaseTicket(signal.getLastTicket());
             }
-
-            signal.setLastTicket(ForgeChunkManager.requestTicket(Signalbox.instance, world, ForgeChunkManager.Type.NORMAL));
-            if (signal.getLastTicket() == null) {
-                //FMLLog.getLogger().error("Signal failed to load chunk during tick - maybe there are too many signals?");
-                return false;
-            }
-
-            ForgeChunkManager.forceChunk(signal.getLastTicket(), new ChunkPos(chunk.x, chunk.z));
-        } else if (signal.getLastTicket() != null && !signal.getLastTicket().getChunkList().contains(new ChunkPos(chunk.x, chunk.z))) {
-            ChunkPos lastChunkPos = null;
-            for (ChunkPos pos : signal.getLastTicket().getChunkList()) {
-                lastChunkPos = pos;
-                break;
-            }
-
-            ForgeChunkManager.unforceChunk(signal.getLastTicket(), lastChunkPos);
-            ForgeChunkManager.releaseTicket(signal.getLastTicket());
         }
 
         return true;
     }
 
-    private void doNormalTick() {
+    private int doNormalTick() {
         SignalTileEntity signal = getSignal();
         if (signal.getEndPoint() == null) {
             if (signal.getSignalVariant() != getVariantOff()) {
-                signal.setSignalVariant(getVariantOff());
-                signal.markDirty();
-                signal.updateSignal();
+                return getVariantOff();
             }
-            return;
         }
 
         if (signal.getBlocksTravelled() == 0) {
-            if (!(world.getBlockState(signal.getPos()).getBlock() instanceof BaseSignal)) return;
+            if (!(world.getBlockState(signal.getPos()).getBlock() instanceof BaseSignal)) return -1;
             EnumFacing signalFacing = world.getBlockState(signal.getPos()).getValue(BaseSignal.FACING);
             BlockPos current = new BlockPos(signal.getOrigin());
             BlockPos motionBP = current.offset(signalFacing);
 
             signal.setLastMotion(new Vec3d(motionBP).subtract(new Vec3d(current)));
-            signal.markDirty();
-            signal.updateSignal();
         }
 
         for (int i = 0; i < 2; i++) {
@@ -369,22 +377,19 @@ public class ControllerMasterTileEntity extends TileEntity implements ITickable,
 
             Vec3d nextLocation = ImmersiveRailroading.getNextPosition(signal.getLastLocation(), motion, signal.getWorld(), signal.getLastSwitchInfo());
 
+            if (nextLocation == null) break;
+
             if (!doChunkLoad(new BlockPos(nextLocation))) {
                 signal.setLastLocation(null);
                 signal.setBlocksTravelled(0);
-                signal.markDirty();
-                signal.updateSignal();
                 break;
             }
 
             if (ImmersiveRailroading.hasStockNearby(signal.getOrigin(), signal.getWorld()) || ImmersiveRailroading.hasStockNearby(nextLocation, signal.getWorld())) {
-                signal.setSignalVariant(getVariantOff());
                 signal.setLastTickTimedOut(false);
                 signal.setLastLocation(null);
                 signal.setBlocksTravelled(0);
-                signal.markDirty();
-                signal.updateSignal();
-                break;
+                return getVariantOff();
             } else if (signal.getEndPoint()._1().equals(new BlockPos(nextLocation))) {
                 TileEntity masterTE = world.getTileEntity(signal.getEndPoint()._2());
                 if (masterTE instanceof SignalTileEntity && ((SignalTileEntity) masterTE).getMode() == SignalMode.AUTO) {
@@ -393,39 +398,35 @@ public class ControllerMasterTileEntity extends TileEntity implements ITickable,
                     ControllerMasterTileEntity controller = (ControllerMasterTileEntity) Signalbox.instance.getControllerDispatcher().getControllers().get(signal.getFrequency());
                     if (controller == null) break;
                     if (masterTESignal.getSignalVariant() == controller.getVariantOn()) {
-                        signal.setSignalVariant(controller.getVariantOn());
+                        return getVariantOn();
                     } else if (masterTESignal.getSignalVariant() == controller.getNextOccupied()) {
-                        signal.setSignalVariant(controller.getVariantOn());
+                        return getVariantOn();
                     } else if (masterTESignal.getSignalVariant() == controller.getVariantOff()) {
-                        signal.setSignalVariant(controller.getNextOccupied());
+                        return getNextOccupied();
                     }
 
                     signal.setLastTickTimedOut(false);
                     signal.setLastLocation(null);
                     signal.setBlocksTravelled(0);
-                    signal.markDirty();
-                    signal.updateSignal();
-                    break;
+                    return -1;
                 } else if (world.getBlockState(signal.getEndPoint()._2()).getBlock() instanceof BaseSignal) {
                     SignalTileEntity lastSignal = (SignalTileEntity) world.getTileEntity(signal.getEndPoint()._2());
                     ControllerMasterTileEntity controller = (ControllerMasterTileEntity) Signalbox.instance.getControllerDispatcher().getControllers().get(lastSignal.getFrequency());
                     if (controller != null) {
                         if (lastSignal.getSignalVariant() == controller.getVariantOn()) {
-                            signal.setSignalVariant(controller.getVariantOn());
+                            return getVariantOn();
                         } else if (lastSignal.getSignalVariant() == controller.getNextOccupied()) {
-                            signal.setSignalVariant(controller.getVariantOn());
+                            return getVariantOn();
                         } else if (lastSignal.getSignalVariant() == controller.getVariantOff()) {
-                            signal.setSignalVariant(controller.getNextOccupied());
+                            return getNextOccupied();
                         }
                     } else {
-                        signal.setSignalVariant(getNextOccupied());
+                        return getNextOccupied();
                     }
                     signal.setLastTickTimedOut(false);
                     signal.setLastLocation(null);
                     signal.setBlocksTravelled(0);
-                    signal.markDirty();
-                    signal.updateSignal();
-                    break;
+                    return -1;
                 }
             }
 
@@ -433,19 +434,15 @@ public class ControllerMasterTileEntity extends TileEntity implements ITickable,
 
             signal.setBlocksTravelled(signal.getBlocksTravelled() + 1);
             if (signal.getBlocksTravelled() >= 5000 || nextLocation == signal.getLastLocation()) {
-                signal.setSignalVariant(getVariantOff());
                 signal.setLastTickTimedOut(true);
                 signal.setLastLocation(null);
                 signal.setBlocksTravelled(0);
-                signal.markDirty();
-                signal.updateSignal();
-                break;
+                return getVariantOff();
             }
 
             signal.setLastLocation(nextLocation);
-            signal.markDirty();
-            signal.updateSignal();
         }
+        return -1;
     }
 
     public int getNextOccupied() {
@@ -458,13 +455,11 @@ public class ControllerMasterTileEntity extends TileEntity implements ITickable,
 
     @Override
     public void update() {
-        ticksPassed++;
-        if (ticksPassed >= 5) {
-            ticksPassed = 0;
+        if (!world.isRemote) {
             if (getSignal() != null && getSignal().getMode() == SignalMode.AUTO) {
                 updateSignalDistant();
             } else if (getSignal() != null && getSignal().getMode() != SignalMode.AUTO) {
-                updateSignal();
+                updateSignal(isActive() ? getVariantOn() : getVariantOff());
             }
         }
     }

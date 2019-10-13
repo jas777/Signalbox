@@ -9,6 +9,7 @@ import com.jas777.signalbox.network.signalpacket.SignalboxInputStream;
 import com.jas777.signalbox.network.signalpacket.SignalboxOutputStream;
 import com.jas777.signalbox.util.CanBePowered;
 import com.jas777.signalbox.util.Controller;
+import com.jas777.signalbox.util.SignalboxTileEntity;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -26,7 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class ControllerDisplayTileEntity extends TileEntity implements GuiUpdateHandler, CanBePowered, Controller {
+public class ControllerDisplayTileEntity extends TileEntity implements GuiUpdateHandler, CanBePowered, Controller, SignalboxTileEntity {
 
     private boolean active;
     private int channel = 0;

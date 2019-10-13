@@ -10,6 +10,7 @@ import com.jas777.signalbox.network.signalpacket.SignalboxInputStream;
 import com.jas777.signalbox.network.signalpacket.SignalboxOutputStream;
 import com.jas777.signalbox.util.CanBePowered;
 import com.jas777.signalbox.util.CanReceive;
+import com.jas777.signalbox.util.SignalboxTileEntity;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -25,7 +26,7 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import javax.annotation.Nullable;
 import java.io.IOException;
 
-public class DisplayTileEntity extends TileEntity implements GuiUpdateHandler, CanBePowered, CanReceive {
+public class DisplayTileEntity extends TileEntity implements GuiUpdateHandler, CanBePowered, CanReceive, SignalboxTileEntity {
 
     private String displayedText = "0";
     private int channel = 0;
