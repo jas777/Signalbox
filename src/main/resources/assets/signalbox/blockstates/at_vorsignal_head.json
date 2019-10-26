@@ -1,0 +1,66 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "signalbox:at_vorsignal_head",
+    "textures": {
+      "orange_left": "signalbox:blocks/orange_light",
+      "orange_right": "signalbox:blocks/orange_light",
+	  "green_left": "blocks/concrete_black",
+	  "green_right": "blocks/concrete_black"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "south": {"y": 180},
+      "east":  {"y": 90},
+      "west":  {"y": -90}
+    },
+    "active": {
+      "true": {},
+      "false": {
+        "textures": {
+		  "orange_left": "blocks/concrete_black",
+		  "orange_right": "blocks/concrete_black",
+		  "green_left": "blocks/concrete_black",
+		  "green_right": "blocks/concrete_black"
+        }
+      }
+    },
+    "signal_variant": {
+      "0": {
+        "textures": {
+		  "orange_left": "signalbox:blocks/orange_light",
+		  "orange_right": "signalbox:blocks/orange_light",
+		  "green_left": "blocks/concrete_black",
+		  "green_right": "blocks/concrete_black"
+        }
+      },
+      "1": {
+	    "textures": {
+		  "orange_left": "blocks/concrete_black",
+		  "orange_right": "blocks/concrete_black",
+		  "green_left": "signalbox:blocks/green_light",
+		  "green_right": "signalbox:blocks/green_light"
+        }
+      },
+	  "2": {
+	    "textures": {
+		  "orange_left": "signalbox:blocks/orange_light",
+		  "orange_right": "blocks/concrete_black",
+		  "green_left": "signalbox:blocks/green_light",
+		  "green_right": "signalbox:blocks/green_light"
+        }
+      },
+	  "3": {
+	    "textures": {
+		  "orange_left": "signalbox:blocks/orange_light",
+		  "orange_right": "signalbox:blocks/orange_light",
+		  "green_left": "signalbox:blocks/green_light",
+		  "green_right": "blocks/concrete_black"
+        }
+      }
+    },
+    "inventory": [{}]
+  }
+}

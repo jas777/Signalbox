@@ -3,8 +3,8 @@ package com.jas777.signalbox.network.packet;
 import com.jas777.signalbox.signal.SignalMode;
 import com.jas777.signalbox.tileentity.SignalTileEntity;
 import io.netty.buffer.ByteBuf;
-import jdk.nashorn.internal.ir.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -74,15 +74,20 @@ public class PacketUpdateSignal implements IMessage {
         @Override
         public IMessage onMessage(PacketUpdateSignal message, MessageContext ctx) {
             Minecraft.getMinecraft().addScheduledTask(() -> {
-                SignalTileEntity te = (SignalTileEntity) Minecraft.getMinecraft().world.getTileEntity(message.pos);
-                te.setChannel(message.channel);
-                te.setId(message.id);
-                te.setSignalVariant(message.variant);
-                te.setMode(SignalMode.values()[message.mode]);
-                te.setOrigin(message.origin == null ? null : new Vec3d(message.origin));
-                te.setLastLocation(message.lastLocation == null ? null : new Vec3d(message.lastLocation));
-                te.setLastMotion(message.lastMotion == null ? null : new Vec3d(message.lastMotion));
-                te.setBlocksTravelled(message.blocksTravelled);
+
+                TileEntity te = Minecraft.getMinecraft().world.getTileEntity(message.pos);
+                if (!(te instanceof SignalTileEntity)) return;
+                SignalTileEntity signal = (SignalTileEntity) te;
+
+                signal.setChannel(message.channel);
+                signal.setId(message.id);
+                signal.setSignalVariant(message.variant);
+                signal.setMode(SignalMode.values()[message.mode]);
+                signal.setOrigin(message.origin == null ? null : new Vec3d(message.origin));
+                signal.setLastLocation(message.lastLocation == null ? null : new Vec3d(message.lastLocation));
+                signal.setLastMotion(message.lastMotion == null ? null : new Vec3d(message.lastMotion));
+                signal.setBlocksTravelled(message.blocksTravelled);
+
             });
             return null;
         }

@@ -1,0 +1,90 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "signalbox:hu_main_head_top",
+    "textures": {
+      "green": "blocks/concrete_black",
+	  "amber_top": "blocks/concrete_black",
+      "red": "signalbox:blocks/red",
+	  "amber_bottom": "blocks/concrete_black"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "south": {"y": 180},
+      "east":  {"y": 90},
+      "west":  {"y": -90}
+    },
+    "active": {
+      "true": {},
+      "false": {
+        "textures": {
+		  "green": "blocks/concrete_black",
+		  "amber_top": "blocks/concrete_black",
+		  "red": "blocks/concrete_black",
+		  "amber_bottom": "blocks/concrete_black"
+        }
+      }
+    },
+    "signal_variant": {
+      "0": {
+        "textures": {
+		  "green": "blocks/concrete_black",
+		  "amber_top": "blocks/concrete_black",
+		  "red": "signalbox:blocks/red",
+		  "amber_bottom": "blocks/concrete_black"
+        }
+      },
+      "1": {
+	    "textures": {
+		  "green": "blocks/concrete_black",
+		  "amber_top": "signalbox:blocks/amber_blink",
+		  "red": "blocks/concrete_black",
+		  "amber_bottom": "signalbox:blocks/amber"
+        }
+      },
+	  "2": {
+	    "textures": {
+		  "green": "blocks/concrete_black",
+		  "amber_top": "signalbox:blocks/amber",
+		  "red": "blocks/concrete_black",
+		  "amber_bottom": "signalbox:blocks/amber"
+        }
+      },
+	  "3": {
+	    "textures": {
+		  "green": "signalbox:blocks/green_light",
+		  "amber_top": "blocks/concrete_black",
+		  "red": "blocks/concrete_black",
+		  "amber_bottom": "signalbox:blocks/amber"
+        }
+      },
+	  "4": {
+	    "textures": {
+		  "green": "blocks/concrete_black",
+		  "amber_top": "signalbox:blocks/amber_blink",
+		  "red": "blocks/concrete_black",
+		  "amber_bottom": "blocks/concrete_black"
+        }
+      },
+	  "5": {
+	    "textures": {
+		  "green": "blocks/concrete_black",
+		  "amber_top": "signalbox:blocks/amber",
+		  "red": "blocks/concrete_black",
+		  "amber_bottom": "blocks/concrete_black"
+        }
+      },
+	  "6": {
+	    "textures": {
+		  "green": "signalbox:blocks/green_light",
+		  "amber_top": "blocks/concrete_black",
+		  "red": "blocks/concrete_black",
+		  "amber_bottom": "blocks/concrete_black"
+        }
+      }
+    },
+    "inventory": [{}]
+  }
+}

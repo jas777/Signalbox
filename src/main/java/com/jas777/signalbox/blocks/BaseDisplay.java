@@ -22,6 +22,8 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
@@ -147,11 +149,12 @@ public class BaseDisplay extends BaseBlock implements HasVariant {
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (worldIn.isRemote) {
             Minecraft.getMinecraft().displayGuiScreen(new GuiDisplay((DisplayTileEntity) worldIn.getTileEntity(pos)));
         }
-        return false;
+        return true;
     }
 
     @Override

@@ -1,8 +1,9 @@
-package com.jas777.signalbox.blocks.de;
+package com.jas777.signalbox.blocks.ch;
 
 import com.jas777.signalbox.blocks.BaseSignal;
 import com.jas777.signalbox.tileentity.SignalTileEntity;
 import com.jas777.signalbox.util.HasVariant;
+import com.jas777.signalbox.util.SignalboxTabs;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyInteger;
@@ -14,15 +15,16 @@ import net.minecraft.world.IBlockAccess;
 
 import javax.annotation.Nullable;
 
-public class BlockShuntSignalGroundOld extends BaseSignal implements HasVariant {
+public class BlockChOepnvHead extends BaseSignal implements HasVariant {
 
     private static final AxisAlignedBB BOUNDING_BOX = new AxisAlignedBB(1 * 0.0625, 0, 4 * 0.0625, 15 * 0.0625, 15 * 0.0625, 12 * 0.0625);
 
-    public static final PropertyInteger SIGNAL_VARIANT = PropertyInteger.create("signal_variant", 0, 3);
+    public static final PropertyInteger SIGNAL_VARIANT = PropertyInteger.create("signal_variant", 0, 1);
 
-    public BlockShuntSignalGroundOld() {
-        super("de_shunt_signal_ground_old", Material.IRON);
-        this.setDefaultState(this.getDefaultState().withProperty(ACTIVE, Boolean.FALSE).withProperty(SIGNAL_VARIANT, 0));
+    public BlockChOepnvHead() {
+        super("ch_oepnv_head", Material.IRON);
+        this.setDefaultState(this.getDefaultState().withProperty(ACTIVE, Boolean.TRUE).withProperty(SIGNAL_VARIANT, 0));
+        setCreativeTab(SignalboxTabs.CH_CREATIVE_TAB);
     }
 
     @Override
@@ -62,4 +64,5 @@ public class BlockShuntSignalGroundOld extends BaseSignal implements HasVariant 
     public PropertyInteger getSignalVariant() {
         return SIGNAL_VARIANT;
     }
+
 }

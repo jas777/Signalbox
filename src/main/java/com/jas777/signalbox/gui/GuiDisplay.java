@@ -73,7 +73,7 @@ public class GuiDisplay extends GuiScreen {
             if (Integer.parseInt(idTextField.getText()) <= 0) {
                 idTextField.setTextColor(Color.RED.getRGB());
             } else {
-                channelTextField.setTextColor(Color.WHITE.getRGB());
+                idTextField.setTextColor(Color.WHITE.getRGB());
             }
 
             channelTextField.drawTextBox();
@@ -132,13 +132,22 @@ public class GuiDisplay extends GuiScreen {
     }
 
     @Override
+    protected void actionPerformed(GuiButton button) throws IOException {
+        if (button.id == BUTTON_SAVE) {
+            if (tile.getWorld().isRemote) {
+                tile.setChannel(Integer.parseInt(channelTextField.getText()));
+                tile.setId(Integer.parseInt(idTextField.getText()));
+                PacketGuiReturn packet = new PacketGuiReturn(tile);
+                PacketDispatcher.sendToServer(packet);
+            }
+        }
+    }
+
+    @Override
     protected void keyTyped(char typedChar, int keyCode) throws IOException {
 
         channelTextField.textboxKeyTyped(typedChar, keyCode);
         idTextField.textboxKeyTyped(typedChar, keyCode);
-
-        tile.setChannel(Integer.parseInt(channelTextField.getText()));
-        tile.setId(Integer.parseInt(idTextField.getText()));
 
         super.keyTyped(typedChar, keyCode);
     }

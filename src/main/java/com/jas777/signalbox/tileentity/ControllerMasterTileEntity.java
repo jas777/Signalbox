@@ -1,7 +1,6 @@
 package com.jas777.signalbox.tileentity;
 
 import com.jas777.signalbox.Signalbox;
-import com.jas777.signalbox.blocks.BaseSignal;
 import com.jas777.signalbox.blocks.controller.BlockController;
 import com.jas777.signalbox.channel.Channel;
 import com.jas777.signalbox.gui.GuiUpdateHandler;
@@ -22,11 +21,9 @@ import net.minecraft.nbt.NBTTagIntArray;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.ForgeChunkManager;
@@ -217,12 +214,17 @@ public class ControllerMasterTileEntity extends TileEntity implements ITickable,
         return Collections.max(signal.getSignalVariant().getAllowedValues());
     }
 
-    private SignalTileEntity getSignal() {
-        Channel dispatchChannel = Signalbox.instance.getChannelDispatcher().getChannels().get(channel);
-        if (dispatchChannel == null || dispatchChannel.getReceivers().get(id) == null) return null;
-        TileEntity tileEntity = world.getTileEntity(dispatchChannel.getReceivers().get(id));
-        if (!(tileEntity instanceof SignalTileEntity)) return null;
-        return (SignalTileEntity) tileEntity;
+    public SignalTileEntity getSignal() {
+        if (!world.isRemote) {
+            if (Signalbox.instance.getChannelDispatcher() != null) {
+                Channel dispatchChannel = Signalbox.instance.getChannelDispatcher().getChannels().get(channel);
+                if (dispatchChannel == null || dispatchChannel.getReceivers().get(id) == null) return null;
+                TileEntity tileEntity = world.getTileEntity(dispatchChannel.getReceivers().get(id));
+                if (!(tileEntity instanceof SignalTileEntity)) return null;
+                return (SignalTileEntity) tileEntity;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -290,7 +292,11 @@ public class ControllerMasterTileEntity extends TileEntity implements ITickable,
                 }
             }
 
-            int tickResult = doNormalTick();
+            int tickResult = -2;
+
+            if (Signalbox.instance.IR_LOADED) {
+                tickResult = ImmersiveRailroading.doNormalTick(this);
+            }
 
             switch (tickResult) {
                 case -1:
@@ -302,9 +308,10 @@ public class ControllerMasterTileEntity extends TileEntity implements ITickable,
             }
 
         }
+
     }
 
-    private boolean doChunkLoad(BlockPos nextPos) {
+    public boolean doChunkLoad(BlockPos nextPos) {
         if (!world.isRemote) {
             Chunk chunk = world.getChunkFromBlockCoords(nextPos);
             SignalTileEntity signal = getSignal();
@@ -343,106 +350,6 @@ public class ControllerMasterTileEntity extends TileEntity implements ITickable,
         }
 
         return true;
-    }
-
-    private int doNormalTick() {
-        SignalTileEntity signal = getSignal();
-        if (signal.getEndPoint() == null) {
-            if (signal.getSignalVariant() != getVariantOff()) {
-                return getVariantOff();
-            }
-        }
-
-        if (signal.getBlocksTravelled() == 0) {
-            if (!(world.getBlockState(signal.getPos()).getBlock() instanceof BaseSignal)) return -1;
-            EnumFacing signalFacing = world.getBlockState(signal.getPos()).getValue(BaseSignal.FACING);
-            BlockPos current = new BlockPos(signal.getOrigin());
-            BlockPos motionBP = current.offset(signalFacing);
-
-            signal.setLastMotion(new Vec3d(motionBP).subtract(new Vec3d(current)));
-        }
-
-        for (int i = 0; i < 2; i++) {
-            if (signal.getLastLocation() == null) {
-                signal.setLastLocation(signal.getOrigin());
-            }
-
-            if (signal.getLastMotion() == null) {
-                signal.setLastMotion(new Vec3d(0, 0, 0));
-            }
-
-            Vec3d motion = signal.getLastMotion();
-
-            if (motion == null) motion = new Vec3d(0, 0, 0);
-
-            Vec3d nextLocation = ImmersiveRailroading.getNextPosition(signal.getLastLocation(), motion, signal.getWorld(), signal.getLastSwitchInfo());
-
-            if (nextLocation == null) break;
-
-            if (!doChunkLoad(new BlockPos(nextLocation))) {
-                signal.setLastLocation(null);
-                signal.setBlocksTravelled(0);
-                break;
-            }
-
-            if (ImmersiveRailroading.hasStockNearby(signal.getOrigin(), signal.getWorld()) || ImmersiveRailroading.hasStockNearby(nextLocation, signal.getWorld())) {
-                signal.setLastTickTimedOut(false);
-                signal.setLastLocation(null);
-                signal.setBlocksTravelled(0);
-                return getVariantOff();
-            } else if (signal.getEndPoint()._1().equals(new BlockPos(nextLocation))) {
-                TileEntity masterTE = world.getTileEntity(signal.getEndPoint()._2());
-                if (masterTE instanceof SignalTileEntity && ((SignalTileEntity) masterTE).getMode() == SignalMode.AUTO) {
-                    SignalTileEntity masterTESignal = (SignalTileEntity) masterTE;
-
-                    ControllerMasterTileEntity controller = (ControllerMasterTileEntity) Signalbox.instance.getControllerDispatcher().getControllers().get(signal.getFrequency());
-                    if (controller == null) break;
-                    if (masterTESignal.getSignalVariant() == controller.getVariantOn()) {
-                        return getVariantOn();
-                    } else if (masterTESignal.getSignalVariant() == controller.getNextOccupied()) {
-                        return getVariantOn();
-                    } else if (masterTESignal.getSignalVariant() == controller.getVariantOff()) {
-                        return getNextOccupied();
-                    }
-
-                    signal.setLastTickTimedOut(false);
-                    signal.setLastLocation(null);
-                    signal.setBlocksTravelled(0);
-                    return -1;
-                } else if (world.getBlockState(signal.getEndPoint()._2()).getBlock() instanceof BaseSignal) {
-                    SignalTileEntity lastSignal = (SignalTileEntity) world.getTileEntity(signal.getEndPoint()._2());
-                    ControllerMasterTileEntity controller = (ControllerMasterTileEntity) Signalbox.instance.getControllerDispatcher().getControllers().get(lastSignal.getFrequency());
-                    if (controller != null) {
-                        if (lastSignal.getSignalVariant() == controller.getVariantOn()) {
-                            return getVariantOn();
-                        } else if (lastSignal.getSignalVariant() == controller.getNextOccupied()) {
-                            return getVariantOn();
-                        } else if (lastSignal.getSignalVariant() == controller.getVariantOff()) {
-                            return getNextOccupied();
-                        }
-                    } else {
-                        return getNextOccupied();
-                    }
-                    signal.setLastTickTimedOut(false);
-                    signal.setLastLocation(null);
-                    signal.setBlocksTravelled(0);
-                    return -1;
-                }
-            }
-
-            signal.setLastMotion(nextLocation.subtract(signal.getLastLocation()));
-
-            signal.setBlocksTravelled(signal.getBlocksTravelled() + 1);
-            if (signal.getBlocksTravelled() >= 5000 || nextLocation == signal.getLastLocation()) {
-                signal.setLastTickTimedOut(true);
-                signal.setLastLocation(null);
-                signal.setBlocksTravelled(0);
-                return getVariantOff();
-            }
-
-            signal.setLastLocation(nextLocation);
-        }
-        return -1;
     }
 
     public int getNextOccupied() {

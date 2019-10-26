@@ -3,6 +3,7 @@ package com.jas777.signalbox.blocks.fi;
 import com.jas777.signalbox.blocks.BaseSignal;
 import com.jas777.signalbox.tileentity.SignalTileEntity;
 import com.jas777.signalbox.util.HasVariant;
+import com.jas777.signalbox.util.SignalboxTabs;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyInteger;
@@ -22,7 +23,8 @@ public class BlockMainSignalHead extends BaseSignal implements HasVariant {
 
     public BlockMainSignalHead() {
         super("fi_main_signal_head", Material.IRON);
-        this.setDefaultState(this.getDefaultState().withProperty(ACTIVE, Boolean.FALSE).withProperty(SIGNAL_VARIANT, 0));
+        this.setDefaultState(this.getDefaultState().withProperty(ACTIVE, Boolean.TRUE).withProperty(SIGNAL_VARIANT, 0));
+        setCreativeTab(SignalboxTabs.FI_CREATIVE_TAB);
     }
 
     @Override

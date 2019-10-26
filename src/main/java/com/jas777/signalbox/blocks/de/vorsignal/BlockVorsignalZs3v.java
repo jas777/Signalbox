@@ -1,6 +1,7 @@
 package com.jas777.signalbox.blocks.de.vorsignal;
 
 import com.jas777.signalbox.blocks.BaseDisplay;
+import com.jas777.signalbox.util.SignalboxTabs;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -22,7 +23,8 @@ public class BlockVorsignalZs3v extends BaseDisplay {
 
     public BlockVorsignalZs3v() {
         super("de_vorsignal_zs3v", Material.IRON);
-        this.setDefaultState(this.getDefaultState().withProperty(ACTIVE, Boolean.FALSE));
+        this.setDefaultState(this.getDefaultState().withProperty(ACTIVE, Boolean.TRUE));
+        setCreativeTab(SignalboxTabs.DE_CREATIVE_TAB);
 
         this.displayX1 = 6 * 0.0625;
         this.displayX2 = 11 * 0.0625;

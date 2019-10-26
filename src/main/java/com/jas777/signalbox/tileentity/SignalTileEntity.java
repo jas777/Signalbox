@@ -112,11 +112,6 @@ public class SignalTileEntity extends TileEntity implements GuiUpdateHandler, Ca
         if (channel != 0 && id != 0) {
             Signalbox.instance.getChannelDispatcher().tune(channel, id, pos);
         }
-        if (world.isRemote) {
-            Signalbox.network.sendToServer(new PacketRequestUpdateSignal(this));
-        } else {
-            Signalbox.network.sendToAllAround(new PacketUpdateSignal(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
-        }
     }
 
     @Override
@@ -177,12 +172,23 @@ public class SignalTileEntity extends TileEntity implements GuiUpdateHandler, Ca
     }
 
     public void updateSignal() {
-        if (!world.isRemote) {
-            Signalbox.network.sendToAllAround(new PacketUpdateSignal(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
-        }
+
         if (world.getBlockState(pos).getBlock() instanceof BaseSignal) {
+
             HasVariant sVariant = (HasVariant) world.getBlockState(pos).getBlock();
+
+            if (getBlockType() instanceof HasParts) {
+                ((HasParts) world.getBlockState(pos).getBlock()).updateParts(world, pos, world.getBlockState(pos));
+            }
+
             world.notifyBlockUpdate(pos, world.getBlockState(pos), world.getBlockState(pos).withProperty(sVariant.getSignalVariant(), signalVariant), 2);
+
+        }
+
+        if (world.isRemote) {
+            Signalbox.network.sendToServer(new PacketRequestUpdateSignal(this));
+        } else {
+            Signalbox.network.sendToAllAround(new PacketUpdateSignal(this), new NetworkRegistry.TargetPoint(this.getWorld().provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
         }
     }
 

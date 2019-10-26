@@ -19,6 +19,8 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 
@@ -41,7 +43,7 @@ public class BaseSignal extends BaseBlock {
             facing = EnumFacing.NORTH;
         }
 
-        return getDefaultState().withProperty(FACING, facing).withProperty(ACTIVE, active);
+        return getDefaultState().withProperty(FACING, facing).withProperty(ACTIVE, true);
     }
 
     @Override
@@ -82,7 +84,7 @@ public class BaseSignal extends BaseBlock {
             } else {
                 CanBePowered tileEntity = (CanBePowered) worldIn.getTileEntity(pos);
                 tileEntity.setActive(false);
-                worldIn.setBlockState(pos, state.withProperty(ACTIVE, Boolean.FALSE), 2);
+                worldIn.setBlockState(pos, state.withProperty(ACTIVE, Boolean.TRUE), 2);
             }
         }
     }
@@ -104,7 +106,7 @@ public class BaseSignal extends BaseBlock {
                 CanBePowered tileEntity = (CanBePowered) worldIn.getTileEntity(pos);
                 tileEntity.setActive(false);
                 blockIn.setLightLevel(0F);
-                worldIn.setBlockState(pos, state.withProperty(ACTIVE, Boolean.FALSE), 2);
+                worldIn.setBlockState(pos, state.withProperty(ACTIVE, Boolean.TRUE), 2);
             }
         }
     }
@@ -130,11 +132,12 @@ public class BaseSignal extends BaseBlock {
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (worldIn.isRemote) {
             Minecraft.getMinecraft().displayGuiScreen(new GuiSignal((SignalTileEntity) worldIn.getTileEntity(pos)));
         }
-        return false;
+        return true;
     }
 
     @Override

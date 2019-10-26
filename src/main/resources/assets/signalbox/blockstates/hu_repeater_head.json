@@ -1,0 +1,50 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "signalbox:hu_repeater_head",
+    "textures": {
+      "white_top": "blocks/concrete_black",
+	  "white_bottom": "signalbox:blocks/white",
+      "green": "blocks/concrete_black",
+	  "amber": "signalbox:blocks/amber"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "south": {"y": 180},
+      "east":  {"y": 90},
+      "west":  {"y": -90}
+    },
+    "active": {
+      "true": {},
+      "false": {
+        "textures": {
+		  "white_top": "blocks/concrete_black",
+		  "white_bottom": "blocks/concrete_black",
+		  "green": "blocks/concrete_black",
+		  "amber": "blocks/concrete_black"
+        }
+      }
+    },
+    "signal_variant": {
+      "0": {
+        "textures": {
+		  "white_top": "blocks/concrete_black",
+		  "white_bottom": "signalbox:blocks/white",
+		  "green": "blocks/concrete_black",
+		  "amber": "signalbox:blocks/amber"
+        }
+      },
+      "1": {
+	    "textures": {
+		  "white_top": "signalbox:blocks/white",
+		  "white_bottom": "blocks/concrete_black",
+		  "green": "signalbox:blocks/green_light",
+		  "amber": "blocks/concrete_black"
+        }
+      }
+    },
+    "inventory": [{}]
+  }
+}

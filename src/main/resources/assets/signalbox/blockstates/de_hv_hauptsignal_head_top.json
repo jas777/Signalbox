@@ -1,0 +1,82 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "signalbox:de_hv_hauptsignal_head_top",
+    "textures": {
+      "green": "signalbox:blocks/green_light",
+      "orange_set": "signalbox:blocks/orange_light",
+      "red_right": "signalbox:blocks/red",
+      "red_left": "signalbox:blocks/red",
+      "white_set": "signalbox:blocks/white"
+    }
+  },
+  "variants": {
+    "normal": [{}],
+    "facing": {
+      "north": {},
+      "south": {"y": 180},
+      "east":  {"y": 90},
+      "west":  {"y": -90}
+    },
+    "active": {
+      "true": {},
+      "false": {
+        "textures": {
+          "green": "blocks/concrete_black",
+          "orange_set": "blocks/concrete_black",
+          "red_right": "blocks/concrete_black",
+          "red_left": "blocks/concrete_black",
+          "white_set": "blocks/concrete_black"
+        }
+      }
+    },
+    "signal_variant": {
+      "0": {
+        "textures": {
+          "green": "blocks/concrete_black",
+          "orange_set": "blocks/concrete_black",
+          "red_right": "signalbox:blocks/red",
+          "red_left": "signalbox:blocks/red",
+          "white_set": "blocks/concrete_black"
+        }
+      },
+      "1": {
+        "textures": {
+          "green": "signalbox:blocks/green_light",
+          "orange_set": "blocks/concrete_black",
+          "red_right": "blocks/concrete_black",
+          "red_left": "blocks/concrete_black",
+          "white_set": "blocks/concrete_black"
+        }
+      },
+      "2": {
+        "textures": {
+          "green": "signalbox:blocks/green_light",
+          "orange_set": "blocks/concrete_black",
+          "red_right": "blocks/concrete_black",
+          "red_left": "blocks/concrete_black",
+          "white_set": "blocks/concrete_black"
+        }
+      },
+      "3": {
+        "textures": {
+          "green": "blocks/concrete_black",
+          "orange_set": "blocks/concrete_black",
+          "red_right": "blocks/concrete_black",
+          "red_left": "signalbox:blocks/red",
+          "white_set": "signalbox:blocks/white"
+        }
+      },
+      "4": {
+        "textures": {
+          "green": "blocks/concrete_black",
+          "orange_set": "signalbox:blocks/orange_light",
+          "red_right": "signalbox:blocks/red",
+          "red_left": "blocks/concrete_black",
+          "white_set": "blocks/concrete_black"
+        }
+      }
+    },
+    "inventory": [{}]
+  }
+}

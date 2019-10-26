@@ -1,0 +1,54 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "signalbox:pl_distant_head",
+    "textures": {
+      "orange": "signalbox:blocks/orange_light",
+      "green": "blocks/concrete_black"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "south": {"y": 180},
+      "east":  {"y": 90},
+      "west":  {"y": -90}
+    },
+    "active": {
+      "true": {},
+      "false": {
+        "textures": {
+          "orange": "blocks/concrete_black",
+          "orange": "blocks/concrete_black"
+        }
+      }
+    },
+    "signal_variant": {
+      "0": {
+        "textures": {
+          "orange": "signalbox:blocks/orange_light",
+          "green": "blocks/concrete_black"
+        }
+      },
+      "1": {
+        "textures": {
+          "orange": "blocks/concrete_black",
+          "green": "signalbox:blocks/green_light"
+        }
+      },
+      "2": {
+        "textures": {
+          "orange": "signalbox:blocks/orange_blink",
+          "green": "blocks/concrete_black"
+        }
+      },
+      "3": {
+        "textures": {
+          "orange": "blocks/concrete_black",
+          "green": "signalbox:blocks/green_blink"
+        }
+      }
+    },
+    "inventory": [{}]
+  }
+}

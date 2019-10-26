@@ -14,6 +14,7 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Mod(modid = Signalbox.MODID, name = Signalbox.NAME, version = Signalbox.VERSION)
@@ -31,7 +32,7 @@ public class Signalbox {
     public static final String NAME = "Signalbox";
     public static final String VERSION = "0.0.1";
 
-    public static Logger logger;
+    public static final Logger logger = LogManager.getLogger();
 
     public boolean IR_LOADED = false;
 
@@ -40,8 +41,6 @@ public class Signalbox {
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-
-        logger = event.getModLog();
 
         network = NetworkRegistry.INSTANCE.newSimpleChannel(MODID);
 

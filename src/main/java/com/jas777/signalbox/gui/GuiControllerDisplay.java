@@ -32,7 +32,7 @@ public class GuiControllerDisplay extends GuiScreen {
 
     private final int BUTTON_VARIANT_PLUS = 0;
     private final int BUTTON_VARIANT_MINUS = 1;
-    private int BUTTON_SAVE = 2;
+    private final int BUTTON_SAVE = 2;
 
     private final int TEXT_CHANNEL = 4;
     private final int TEXT_ID = 5;
@@ -160,14 +160,14 @@ public class GuiControllerDisplay extends GuiScreen {
                     tile.setSpeedLimit(tile.getSpeedLimit() - 1);
                 }
                 break;
-
-        }
-
-        if (tile.getWorld().isRemote) {
-            tile.setChannel(Integer.parseInt(channelTextField.getText()));
-            tile.setId(Integer.parseInt(idTextField.getText()));
-            PacketGuiReturn packet = new PacketGuiReturn(tile);
-            PacketDispatcher.sendToServer(packet);
+            case BUTTON_SAVE:
+                if (tile.getWorld().isRemote) {
+                    tile.setChannel(Integer.parseInt(channelTextField.getText()));
+                    tile.setId(Integer.parseInt(idTextField.getText()));
+                    PacketGuiReturn packet = new PacketGuiReturn(tile);
+                    PacketDispatcher.sendToServer(packet);
+                }
+                break;
         }
 
         super.actionPerformed(button);
@@ -176,7 +176,8 @@ public class GuiControllerDisplay extends GuiScreen {
     @Override
     public void onGuiClosed() {
         if (tile.getWorld().isRemote) {
-            if (!(Signalbox.instance.getChannelDispatcher().getReceiver(tile.getWorld(), Integer.parseInt(channelTextField.getText()), Integer.parseInt(idTextField.getText())) instanceof DisplayTileEntity)) return;
+            if (!(Signalbox.instance.getChannelDispatcher().getReceiver(tile.getWorld(), Integer.parseInt(channelTextField.getText()), Integer.parseInt(idTextField.getText())) instanceof DisplayTileEntity))
+                return;
             if (Integer.parseInt(channelTextField.getText()) <= 0) return;
             tile.setChannel(Integer.parseInt(channelTextField.getText()));
             tile.setId(Integer.parseInt(idTextField.getText()));
@@ -190,9 +191,6 @@ public class GuiControllerDisplay extends GuiScreen {
 
         channelTextField.textboxKeyTyped(typedChar, keyCode);
         idTextField.textboxKeyTyped(typedChar, keyCode);
-
-        tile.setChannel(Integer.parseInt(channelTextField.getText()));
-        tile.setId(Integer.parseInt(idTextField.getText()));
 
         super.keyTyped(typedChar, keyCode);
     }

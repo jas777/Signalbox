@@ -8,7 +8,10 @@ import cam72cam.immersiverailroading.tile.TileRail;
 import cam72cam.immersiverailroading.tile.TileRailBase;
 import cam72cam.immersiverailroading.track.IIterableTrack;
 import cam72cam.immersiverailroading.util.SwitchUtil;
+import com.jas777.signalbox.Signalbox;
 import com.jas777.signalbox.blocks.BaseSignal;
+import com.jas777.signalbox.signal.SignalMode;
+import com.jas777.signalbox.tileentity.ControllerMasterTileEntity;
 import com.jas777.signalbox.tileentity.SignalTileEntity;
 import com.jas777.signalbox.util.SignalMast;
 import net.minecraft.tileentity.TileEntity;
@@ -168,6 +171,107 @@ public class ImmersiveRailroading {
         List<EntityMoveableRollingStock> stocks = world.getEntitiesWithinAABB(EntityMoveableRollingStock.class, bb);
 
         return !stocks.isEmpty();
+    }
+
+    public static int doNormalTick(ControllerMasterTileEntity controller) {
+        SignalTileEntity signal = controller.getSignal();
+        if (signal.getEndPoint() == null) {
+            if (signal.getSignalVariant() != controller.getVariantOff()) {
+                return controller.getVariantOff();
+            }
+        }
+
+        if (signal.getBlocksTravelled() == 0) {
+            if (!(controller.getWorld().getBlockState(signal.getPos()).getBlock() instanceof BaseSignal)) return -1;
+            EnumFacing signalFacing = controller.getWorld().getBlockState(signal.getPos()).getValue(BaseSignal.FACING);
+            BlockPos current = new BlockPos(signal.getOrigin());
+            BlockPos motionBP = current.offset(signalFacing);
+
+            signal.setLastMotion(new Vec3d(motionBP).subtract(new Vec3d(current)));
+        }
+
+        for (int i = 0; i < 2; i++) {
+            if (signal.getLastLocation() == null) {
+                signal.setLastLocation(signal.getOrigin());
+            }
+
+            if (signal.getLastMotion() == null) {
+                signal.setLastMotion(new Vec3d(0, 0, 0));
+            }
+
+            Vec3d motion = signal.getLastMotion();
+
+            if (motion == null) motion = new Vec3d(0, 0, 0);
+
+            Vec3d nextLocation = ImmersiveRailroading.getNextPosition(signal.getLastLocation(), motion, signal.getWorld(), signal.getLastSwitchInfo());
+
+            if (nextLocation == null) break;
+
+            if (!controller.doChunkLoad(new BlockPos(nextLocation))) {
+                signal.setLastLocation(null);
+                signal.setBlocksTravelled(0);
+                break;
+            }
+
+            if (ImmersiveRailroading.hasStockNearby(signal.getOrigin(), signal.getWorld()) || ImmersiveRailroading.hasStockNearby(nextLocation, signal.getWorld())) {
+                signal.setLastTickTimedOut(false);
+                signal.setLastLocation(null);
+                signal.setBlocksTravelled(0);
+                return controller.getVariantOff();
+            } else if (signal.getEndPoint()._1().equals(new BlockPos(nextLocation))) {
+                TileEntity masterTE = controller.getWorld().getTileEntity(signal.getEndPoint()._2());
+                if (masterTE instanceof SignalTileEntity && ((SignalTileEntity) masterTE).getMode() == SignalMode.AUTO) {
+                    SignalTileEntity masterTESignal = (SignalTileEntity) masterTE;
+
+                    ControllerMasterTileEntity TEScontroller = (ControllerMasterTileEntity) Signalbox.instance.getControllerDispatcher().getControllers().get(signal.getFrequency());
+                    if (TEScontroller == null) break;
+                    if (masterTESignal.getSignalVariant() == TEScontroller.getVariantOn()) {
+                        return controller.getVariantOn();
+                    } else if (masterTESignal.getSignalVariant() == TEScontroller.getNextOccupied()) {
+                        return controller.getVariantOn();
+                    } else if (masterTESignal.getSignalVariant() == TEScontroller.getVariantOff()) {
+                        return controller.getNextOccupied();
+                    }
+
+                    signal.setLastTickTimedOut(false);
+                    signal.setLastLocation(null);
+                    signal.setBlocksTravelled(0);
+                    return -1;
+                } else if (controller.getWorld().getBlockState(signal.getEndPoint()._2()).getBlock() instanceof BaseSignal) {
+                    SignalTileEntity lastSignal = (SignalTileEntity) controller.getWorld().getTileEntity(signal.getEndPoint()._2());
+                    ControllerMasterTileEntity lastSignalController = (ControllerMasterTileEntity) Signalbox.instance.getControllerDispatcher().getControllers().get(lastSignal.getFrequency());
+                    if (lastSignalController != null) {
+                        if (lastSignal.getSignalVariant() == lastSignalController.getVariantOn()) {
+                            return controller.getVariantOn();
+                        } else if (lastSignal.getSignalVariant() == lastSignalController.getNextOccupied()) {
+                            return controller.getVariantOn();
+                        } else if (lastSignal.getSignalVariant() == lastSignalController.getVariantOff()) {
+                            return controller.getNextOccupied();
+                        }
+                    } else {
+                        return controller.getNextOccupied();
+                    }
+                    signal.setLastTickTimedOut(false);
+                    signal.setLastLocation(null);
+                    signal.setBlocksTravelled(0);
+                    return -1;
+                }
+            }
+
+            signal.setLastMotion(nextLocation.subtract(signal.getLastLocation()));
+
+            signal.setBlocksTravelled(signal.getBlocksTravelled() + 1);
+            if (signal.getBlocksTravelled() >= 5000 || nextLocation == signal.getLastLocation()) {
+                signal.setLastTickTimedOut(true);
+                signal.setLastLocation(null);
+                signal.setBlocksTravelled(0);
+                return controller.getVariantOff();
+            }
+
+            signal.setLastLocation(nextLocation);
+        }
+        signal.markDirty();
+        return -1;
     }
 
 }

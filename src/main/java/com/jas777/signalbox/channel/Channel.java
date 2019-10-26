@@ -18,11 +18,7 @@ public class Channel {
 
     public boolean addReceiver(int id, BlockPos pos) {
         if (receivers.containsKey(id)) return false;
-        if (receivers.containsValue(pos)) {
-            receivers.forEach((rId, rPos) -> {
-                if (rPos.equals(pos)) receivers.remove(rId);
-            });
-        }
+        receivers.entrySet().removeIf(entry -> entry.getValue().equals(pos));
         receivers.put(id, pos);
         return true;
     }

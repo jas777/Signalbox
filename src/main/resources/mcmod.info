@@ -5,12 +5,17 @@
     "description": "Mod that adds train signals to Minecraft.",
     "version": "${version}",
     "mcversion": "${mcversion}",
-    "url": "",
+    "url": "https://www.curseforge.com/minecraft/mc-mods/signalbox",
     "updateUrl": "",
     "authorList": [
       "jas777",
       "thekerbal",
-      "Skyman_Luna"
+      "Skyman_Luna",
+      "PixelTeleV",
+      "CFMcFly",
+      "TheGreyPenguin",
+      "play2002wh",
+      "Saimon"
     ],
     "credits": "",
     "logoFile": "",

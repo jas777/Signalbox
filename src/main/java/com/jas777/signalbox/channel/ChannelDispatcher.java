@@ -1,6 +1,7 @@
 package com.jas777.signalbox.channel;
 
 import com.jas777.signalbox.util.CanReceive;
+import com.jas777.signalbox.util.HasParts;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.minecraft.tileentity.TileEntity;
@@ -29,8 +30,11 @@ public class ChannelDispatcher {
         TileEntity tileEntity = world.getTileEntity(channelToDispatch.getReceivers().get(id));
         if (!(tileEntity instanceof CanReceive)) return;
         ((CanReceive) tileEntity).setData(Unpooled.buffer().writeInt(variant));
-        tileEntity.markDirty();
         ((CanReceive) tileEntity).updateBlock();
+        tileEntity.markDirty();
+        if (tileEntity.getWorld().getBlockState(tileEntity.getPos()).getBlock() instanceof HasParts) {
+            ((HasParts) tileEntity.getWorld().getBlockState(tileEntity.getPos()).getBlock()).updateParts(world, tileEntity.getPos(), tileEntity.getWorld().getBlockState(tileEntity.getPos()));
+        }
     }
 
     public void dispatchMessage(World world, int channel, int id, String variant) {
@@ -45,6 +49,9 @@ public class ChannelDispatcher {
         tileEntity.markDirty();
         System.out.println("Dispatch: " + channel + " - " + id + " - " + variant);
         ((CanReceive) tileEntity).updateBlock();
+        if (tileEntity.getWorld().getBlockState(tileEntity.getPos()).getBlock() instanceof HasParts) {
+            ((HasParts) tileEntity.getWorld().getBlockState(tileEntity.getPos()).getBlock()).updateParts(world, tileEntity.getPos(), tileEntity.getWorld().getBlockState(tileEntity.getPos()));
+        }
     }
 
     public CanReceive getReceiver(World world, int channel, int id) {

@@ -1,5 +1,108 @@
+# Signalbox
+
 tile.controller_master.name=Master Controller
+tile.controller_display.name=Display Controller
+
+# DE
+
 tile.de_vorsignal_frame.name=DE Vorsignal Frame
 tile.de_vorsignal_frame_connected.name=DE Vorsignal Frame
 tile.de_vorsignal_pole.name=DE Vorsignal Pole
 tile.de_vorsignal_stand.name=DE Vorsignal Stand
+tile.de_vorsignal_zs3v.name=DE Vorsignal Zs3v
+
+tile.de_kompaktvorsignal_head.name=DE Kompaktvorsignal Head
+
+tile.de_hv_vorsignal_head.name=DE Hv Vorsignal Head
+
+tile.de_ksmehrfachssignal_head.name=DE Ks Mehrfachssignal Head
+tile.de_ksmehrfachssignal_zs3.name=DE Ks Mehrfachssignal Zs3
+
+tile.de_hv_hauptsignal_head_bottom.name=DE Hv Hauptsignal Head
+tile.de_hv_hauptsignal_sign_top.name=DE Hv Hauptsignal Mastschild Top
+tile.de_hv_hauptsignal_sign_red.name=DE Hv Hauptsignal Mastschild (Red)
+tile.de_hv_hauptsignal_sign_yellow.name=DE Hv Hauptsignal Mastschild (Yellow)
+tile.de_hv_hauptsignal_stand_white.name=DE Hv Hauptsignal Stand (White)
+tile.de_hv_hauptsignal_stand_yellow.name=DE Hv Hauptsignal Stand (Yellow)
+
+tile.de_sperrsignal_head.name=DE Sperrsignal Head
+
+# PL
+
+tile.pl_pole.name=PL Pole (Semi-automatic signals)
+tile.pl_stand.name=PL Stand (Semi-automatic signals)
+
+tile.pl_pole_automatic.name=PL Pole (Automatic signals)
+tile.pl_stand_automatic.name=PL Stand (Automatic signals)
+
+tile.pl_pole_shield.name=PL Pole (Shields)
+tile.pl_stand_shield.name=PL Stand (Shields)
+
+tile.pl_signal_5chambers_head_top.name=PL Signal Head (5 chambers)
+tile.pl_signal_5chambers_head_middle.name=PL Signal Head (5 chambers)
+tile.pl_signal_5chambers_head_bottom.name=PL Signal Head (5 chambers)
+
+tile.pl_tm_ground_head.name=PL Tm Head (ground)
+
+# FI
+
+tile.fi_main_signal_head.name=FI Main Signal Head
+
+# CH
+
+tile.ch_pole.name=CH Pole
+tile.ch_stand.name=CH Stand
+
+tile.ch_lv_signal_head.name=CH L Vorsignal Head (4 lamps)
+
+tile.ch_oepnv_pole.name=OEPNV Pole
+tile.ch_oepnv_head.name=OEPNV Head
+
+tile.ch_zwergsignal_head.name=CH Zwergsignal Head
+
+# UK
+
+tile.uk_pole.name=UK Pole
+tile.uk_stand.name=UK Stand
+
+tile.uk_signal_head.name=UK Distant Signal Head
+
+# HU
+
+tile.hu_pole.name=HU Pole
+tile.hu_stand.name=HU Stand
+
+tile.hu_pole_repeater.name=HU Repeater Pole
+tile.hu_stand_repeater.name=HU Repeater Stand
+
+tile.hu_main_signal_head_bottom.name=HU Main Signal Head
+tile.hu_main_signal_head_top.name=HU Main Signal Head
+
+tile.hu_repeater_head.name=HU Repeater Head
+
+# IT
+
+tile.it_pole.name=IT Pole
+tile.it_stand.name=IT Stand
+
+tile.it_distant_signal_head.name=IT Distant Signal Head
+
+# NL
+
+tile.nl_pole.name=NL Pole
+tile.nl_stand.name=NL Stand
+
+tile.nl_signal_display.name=NL Signal Display
+
+tile.nl_signal_head.name=NL Signal Head
+
+# Creative tabs
+
+itemGroup.tabSignalboxDE=German Signals
+itemGroup.tabSignalboxPL=Polish Signals
+itemGroup.tabSignalboxFI=Finnish Signals
+itemGroup.tabSignalboxCH=Swiss Signals
+itemGroup.tabSignalboxUK=English Signals
+itemGroup.tabSignalboxHU=Hungarian Signals
+itemGroup.tabSignalboxIT=Italian Signals
+itemGroup.tabSignalboxNL=Dutch Signals

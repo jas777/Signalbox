@@ -1,0 +1,96 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "signalbox:pl_signal_5chambers_head_top",
+    "textures": {
+      "orange": "blocks/concrete_black",
+	  "green": "blocks/concrete_black"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "south": {"y": 180},
+      "east":  {"y": 90},
+      "west":  {"y": -90}
+    },
+    "active": {
+      "true": {},
+      "false": {
+        "textures": {
+		  "orange": "blocks/concrete_black",
+		  "green": "blocks/concrete_black"
+        }
+      }
+    },
+    "signal_variant": {
+      "0": {
+        "textures": {
+		  "orange": "blocks/concrete_black",
+		  "green": "blocks/concrete_black"
+        }
+      },
+      "1": {
+	    "textures": {
+		  "orange": "blocks/concrete_black",
+		  "green": "signalbox:blocks/green_light"
+        }
+      },
+	  "2": {
+	    "textures": {
+		  "orange": "blocks/concrete_black",
+		  "green": "signalbox:blocks/green_blink"
+        }
+      },
+	  "3": {
+	    "textures": {
+		  "orange": "signalbox:blocks/orange_blink",
+		  "green": "blocks/concrete_black"
+        }
+      },
+	  "4": {
+	    "textures": {
+		  "orange": "signalbox:blocks/orange_light",
+		  "green": "blocks/concrete_black"
+        }
+      },
+      "5": {
+	    "textures": {
+		  "orange": "blocks/concrete_black",
+		  "green": "signalbox:blocks/green_light"
+        }
+      },
+	  "6": {
+	    "textures": {
+		  "orange": "blocks/concrete_black",
+		  "green": "signalbox:blocks/green_blink"
+        }
+      },
+	  "7": {
+	    "textures": {
+		  "orange": "signalbox:blocks/orange_blink",
+		  "green": "blocks/concrete_black"
+        }
+      },
+	  "8": {
+	    "textures": {
+		  "orange": "signalbox:blocks/orange_light",
+		  "green": "blocks/concrete_black"
+        }
+      },
+	  "9": {
+	    "textures": {
+		  "orange": "blocks/concrete_black",
+		  "green": "blocks/concrete_black"
+        }
+      },
+	  "10": {
+	    "textures": {
+		  "orange": "blocks/concrete_black",
+		  "green": "blocks/concrete_black"
+        }
+      }
+    },
+    "inventory": [{}]
+  }
+}

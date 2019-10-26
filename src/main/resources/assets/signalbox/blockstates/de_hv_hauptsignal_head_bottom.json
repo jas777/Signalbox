@@ -1,0 +1,54 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "signalbox:de_hv_hauptsignal_head_bottom",
+    "textures": {
+      "yellow": "signalbox:blocks/amber"
+    }
+  },
+  "variants": {
+    "normal": [{}],
+    "facing": {
+      "north": {},
+      "south": {"y": 180},
+      "east":  {"y": 90},
+      "west":  {"y": -90}
+    },
+    "active": {
+      "true": {},
+      "false": {
+        "textures": {
+          "yellow": "blocks/concrete_black"
+        }
+      }
+    },
+    "signal_variant": {
+      "0": {
+        "textures": {
+          "yellow": "blocks/concrete_black"
+        }
+      },
+      "1": {
+        "textures": {
+          "yellow": "blocks/concrete_black"
+        }
+      },
+      "2": {
+        "textures": {
+          "yellow": "signalbox:blocks/amber"
+        }
+      },
+      "3": {
+        "textures": {
+          "yellow": "blocks/concrete_black"
+        }
+      },
+      "4": {
+        "textures": {
+          "yellow": "blocks/concrete_black"
+        }
+      }
+    },
+    "inventory": [{}]
+  }
+}

@@ -1,25 +1,31 @@
 {
-	"forge_marker": 1,
-	"defaults": {
-		"model": "signalbox:de_vorsignal_frame_connected"
-	},
-	"variants": {
-		"facing": {
-			"north": {},
-			"south": {
-				"y": 180
-			},
-			"east": {
-				"y": 90
-			},
-			"west": {
-				"y": -90
-			}
-		},
-		"connected": {
-			"true": {},
-			"false": {}
-		},
-		"inventory": [{}]
-	}
+  "forge_marker": 1,
+  "defaults": {
+    "model": "signalbox:de_vorsignal_frame_connected"
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "south": {
+        "y": 180
+      },
+      "east": {
+        "y": 90
+      },
+      "west": {
+        "y": -90
+      }
+    },
+    "connected": {
+      "true": {},
+      "false": {}
+    },
+    "inventory": [
+      {}
+    ],
+	  "active": {
+		  "true": {},
+		  "false": {}
+	  }
+  }
 }

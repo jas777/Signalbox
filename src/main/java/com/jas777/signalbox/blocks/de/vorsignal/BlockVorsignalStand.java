@@ -1,11 +1,10 @@
 package com.jas777.signalbox.blocks.de.vorsignal;
 
-import com.jas777.signalbox.blocks.BaseBlock;
+import com.jas777.signalbox.blocks.BasePole;
 import com.jas777.signalbox.util.SignalMast;
+import com.jas777.signalbox.util.SignalboxTabs;
 import net.minecraft.block.material.Material;
-import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyDirection;
-import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
@@ -15,7 +14,7 @@ import net.minecraft.world.IBlockAccess;
 
 import javax.annotation.Nullable;
 
-public class BlockVorsignalStand extends BaseBlock implements SignalMast {
+public class BlockVorsignalStand extends BasePole implements SignalMast {
 
     private static final AxisAlignedBB BOUNDING_BOX = new AxisAlignedBB(2 * 0.0625, 0, 2 * 0.0625, 14 * 0.0625, 1, 14 * 0.0625);
 
@@ -23,6 +22,7 @@ public class BlockVorsignalStand extends BaseBlock implements SignalMast {
 
     public BlockVorsignalStand() {
         super("de_vorsignal_stand", Material.IRON);
+        setCreativeTab(SignalboxTabs.DE_CREATIVE_TAB);
     }
 
     @Override
@@ -43,27 +43,6 @@ public class BlockVorsignalStand extends BaseBlock implements SignalMast {
     @Override
     public boolean isFullCube(IBlockState state) {
         return false;
-    }
-
-    @Override
-    public IBlockState getStateFromMeta(int meta) {
-        EnumFacing facing = EnumFacing.getFront(meta);
-
-        if (facing.getAxis() == EnumFacing.Axis.Y) {
-            facing = EnumFacing.NORTH;
-        }
-
-        return getDefaultState().withProperty(FACING, facing);
-    }
-
-    @Override
-    public int getMetaFromState(IBlockState state) {
-        return ((EnumFacing) state.getValue(FACING)).getIndex();
-    }
-
-    @Override
-    protected BlockStateContainer createBlockState() {
-        return new BlockStateContainer(this, new IProperty[]{FACING});
     }
 
     @Nullable

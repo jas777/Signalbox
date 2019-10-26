@@ -1,0 +1,90 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "signalbox:ch_zwergsignal_head",
+    "textures": {
+      "top": "blocks/concrete_black",
+      "bottom_1": "signalbox:blocks/white",
+      "bottom_2": "signalbox:blocks/white",
+      "back": "blocks/concrete_black"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "south": {
+        "y": 180
+      },
+      "east": {
+        "y": 90
+      },
+      "west": {
+        "y": -90
+      }
+    },
+    "active": {
+      "true": {},
+      "false": {
+        "textures": {
+          "top": "blocks/concrete_black",
+          "bottom_1": "blocks/concrete_black",
+          "bottom_2": "blocks/concrete_black",
+          "back": "blocks/concrete_black"
+        }
+      }
+    },
+    "signal_variant": {
+      "0": {
+        "textures": {
+          "top": "blocks/concrete_black",
+          "bottom_1": "signalbox:blocks/white",
+          "bottom_2": "signalbox:blocks/white",
+          "back": "blocks/concrete_black"
+        }
+      },
+      "1": {
+        "textures": {
+          "top": "signalbox:blocks/white",
+          "bottom_1": "signalbox:blocks/white",
+          "bottom_2": "blocks/concrete_black",
+          "back": "signalbox:blocks/white"
+        }
+      },
+      "2": {
+        "textures": {
+          "top": "signalbox:blocks/white",
+          "bottom_1": "blocks/concrete_black",
+          "bottom_2": "signalbox:blocks/white",
+          "back": "signalbox:blocks/white"
+        }
+      },
+      "3": {
+        "textures": {
+          "top": "blocks/concrete_black",
+          "bottom_1": "signalbox:blocks/blue_light",
+          "bottom_2": "signalbox:blocks/blue_light",
+          "back": "blocks/concrete_black"
+        }
+      },
+      "4": {
+        "textures": {
+          "top": "signalbox:blocks/blue_light",
+          "bottom_1": "signalbox:blocks/blue_light",
+          "bottom_2": "blocks/concrete_black",
+          "back": "signalbox:blocks/blue_light"
+        }
+      },
+      "5": {
+        "textures": {
+          "top": "signalbox:blocks/blue_light",
+          "bottom_1": "blocks/concrete_black",
+          "bottom_2": "signalbox:blocks/blue_light",
+          "back": "signalbox:blocks/blue_light"
+        }
+      }
+    },
+    "inventory": [
+      {}
+    ]
+  }
+}

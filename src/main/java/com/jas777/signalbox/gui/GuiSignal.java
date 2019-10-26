@@ -81,7 +81,7 @@ public class GuiSignal extends GuiScreen {
             if (Integer.parseInt(idTextField.getText()) <= 0) {
                 idTextField.setTextColor(Color.RED.getRGB());
             } else {
-                channelTextField.setTextColor(Color.WHITE.getRGB());
+                idTextField.setTextColor(Color.WHITE.getRGB());
             }
 
             fontRenderer.drawString("Mode: " + tile.getMode().getName(), centerX + 30, centerY + 30, 0);
@@ -149,6 +149,14 @@ public class GuiSignal extends GuiScreen {
                 if (tile.getMode().ordinal() == 0) return;
                 tile.setMode(SignalMode.values()[tile.getMode().ordinal() - 1]);
                 break;
+            case BUTTON_SAVE:
+                if (tile.getWorld().isRemote) {
+                    tile.setChannel(Integer.parseInt(channelTextField.getText()));
+                    tile.setId(Integer.parseInt(idTextField.getText()));
+                    PacketGuiReturn packet = new PacketGuiReturn(tile);
+                    PacketDispatcher.sendToServer(packet);
+                }
+                break;
         }
     }
 
@@ -168,10 +176,6 @@ public class GuiSignal extends GuiScreen {
 
         channelTextField.textboxKeyTyped(typedChar, keyCode);
         idTextField.textboxKeyTyped(typedChar, keyCode);
-
-        tile.setChannel(Integer.parseInt(channelTextField.getText()));
-        tile.setId(Integer.parseInt(idTextField.getText()));
-        tile.markDirty();
 
         super.keyTyped(typedChar, keyCode);
     }

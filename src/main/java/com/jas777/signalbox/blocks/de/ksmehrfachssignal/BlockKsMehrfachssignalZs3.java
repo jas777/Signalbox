@@ -2,6 +2,7 @@ package com.jas777.signalbox.blocks.de.ksmehrfachssignal;
 
 import com.jas777.signalbox.blocks.BaseDisplay;
 import com.jas777.signalbox.blocks.de.vorsignal.BlockVorsignalFrame;
+import com.jas777.signalbox.util.SignalboxTabs;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -23,7 +24,8 @@ public class BlockKsMehrfachssignalZs3 extends BaseDisplay {
 
     public BlockKsMehrfachssignalZs3() {
         super("de_ks_mehrfachssignal_zs3", Material.IRON);
-        this.setDefaultState(this.getDefaultState().withProperty(ACTIVE, Boolean.FALSE));
+        this.setDefaultState(this.getDefaultState().withProperty(ACTIVE, Boolean.TRUE));
+        setCreativeTab(SignalboxTabs.DE_CREATIVE_TAB);
 
         this.displayX1 = 5 * 0.0625;
         this.displayX2 = 11 * 0.0625;

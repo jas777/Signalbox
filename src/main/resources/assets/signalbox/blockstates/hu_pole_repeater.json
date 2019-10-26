@@ -1,0 +1,30 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "signalbox:hu_pole_repeater"
+  },
+  "variants": {
+    "normal": [
+      {}
+    ],
+    "facing": {
+      "north": {},
+      "south": {
+        "y": 180
+      },
+      "east": {
+        "y": 90
+      },
+      "west": {
+        "y": -90
+      }
+    },
+    "inventory": [
+      {}
+    ],
+    "active": {
+      "true": {},
+      "false": {}
+    }
+  }
+}

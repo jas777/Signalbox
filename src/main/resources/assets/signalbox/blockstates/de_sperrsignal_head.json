@@ -1,0 +1,50 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "signalbox:de_sperrsignal_head",
+    "textures": {
+      "white_1": "blocks/concrete_black",
+      "white_2": "blocks/concrete_black",
+	  "red_1": "signalbox:blocks/red",
+	  "red_2": "signalbox:blocks/red"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "south": {"y": 180},
+      "east":  {"y": 90},
+      "west":  {"y": -90}
+    },
+    "active": {
+      "true": {},
+      "false": {
+        "textures": {
+		  "white_1": "blocks/concrete_black",
+		  "white_2": "blocks/concrete_black",
+		  "red_1": "blocks/concrete_black",
+		  "red_2": "blocks/concrete_black"
+        }
+      }
+    },
+    "signal_variant": {
+      "0": {
+        "textures": {
+		  "white_1": "blocks/concrete_black",
+		  "white_2": "blocks/concrete_black",
+		  "red_1": "signalbox:blocks/red",
+		  "red_2": "signalbox:blocks/red"
+        }
+      },
+      "1": {
+	    "textures": {
+		  "white_1": "signalbox:blocks/white",
+		  "white_2": "signalbox:blocks/white",
+		  "red_1": "blocks/concrete_black",
+		  "red_2": "blocks/concrete_black"
+        }
+      }
+    },
+    "inventory": [{}]
+  }
+}

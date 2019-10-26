@@ -22,6 +22,12 @@
       },
       "false": {}
     },
-"inventory": [{}]
-}
+    "inventory": [
+      {}
+    ],
+    "active": {
+      "true": {},
+      "false": {}
+    }
+  }
 }

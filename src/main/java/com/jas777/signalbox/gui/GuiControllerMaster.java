@@ -4,6 +4,7 @@ import com.jas777.signalbox.Signalbox;
 import com.jas777.signalbox.channel.ChannelDispatcher;
 import com.jas777.signalbox.network.signalpacket.PacketDispatcher;
 import com.jas777.signalbox.network.signalpacket.PacketGuiReturn;
+import com.jas777.signalbox.signal.SignalMode;
 import com.jas777.signalbox.tileentity.ControllerMasterTileEntity;
 import com.jas777.signalbox.tileentity.DisplayTileEntity;
 import com.jas777.signalbox.tileentity.SignalTileEntity;
@@ -26,6 +27,8 @@ public class GuiControllerMaster extends GuiScreen {
     private GuiButton buttonVariantOnMinus;
     private GuiButton buttonVariantOffPlus;
     private GuiButton buttonVariantOffMinus;
+    private GuiButton buttonVariantNocPlus;
+    private GuiButton buttonVariantNocMinus;
 
     private GuiTextField channelTextField;
     private GuiTextField idTextField;
@@ -38,16 +41,20 @@ public class GuiControllerMaster extends GuiScreen {
     private final int BUTTON_VARIANT_OFF_PLUS = 2;
     private final int BUTTON_VARIANT_OFF_MINUS = 3;
 
-    private final int TEXT_CHANNEL = 4;
-    private final int TEXT_ID = 5;
+    private final int BUTTON_VARIANT_NOC_PLUS = 4;
+    private final int BUTTON_VARIANT_NOC_MINUS = 5;
 
-    private int BUTTON_SAVE = 6;
+    private final int TEXT_CHANNEL = 6;
+    private final int TEXT_ID = 7;
+
+    private final int BUTTON_SAVE = 8;
 
     private final int guiWidth = 248;
     private final int guiHeight = 166;
 
     private int variantOnStringLength;
     private int variantOffStringLength;
+    private int variantNocStringLength;
 
     private boolean displayOnFrequency = false;
 
@@ -88,8 +95,15 @@ public class GuiControllerMaster extends GuiScreen {
             if (signal != null) {
                 fontRenderer.drawString("Signal mode: " + signal.getMode().getName(), centerX + 5, centerY + 15, 0x000000);
 
-                fontRenderer.drawString("Signal variant [ON]: " + tile.getVariantOn(), centerX + 5, centerY + 40, 0x000000);
-                fontRenderer.drawString("Signal variant [OFF]: " + tile.getVariantOff(), centerX + 5, centerY + 70, 0x000000);
+                if (signal.getMode() == SignalMode.AUTO) {
+                    fontRenderer.drawString("Signal variant [Free]: " + tile.getVariantOn(), centerX + 5, centerY + 40, 0x000000);
+                    fontRenderer.drawString("Signal variant [Occupied]: " + tile.getVariantOff(), centerX + 5, centerY + 70, 0x000000);
+                    fontRenderer.drawString("Signal variant [Next occupied]: " + tile.getVariantOff(), centerX + 5, centerY + 100, 0x000000);
+                } else {
+                    fontRenderer.drawString("Signal variant [ON]: " + tile.getVariantOn(), centerX + 5, centerY + 40, 0x000000);
+                    fontRenderer.drawString("Signal variant [OFF]: " + tile.getVariantOff(), centerX + 5, centerY + 70, 0x000000);
+                }
+
             }
 
             buttonVariantOnPlus.drawButton(mc, mouseX, mouseY, partialTicks);
@@ -97,6 +111,11 @@ public class GuiControllerMaster extends GuiScreen {
 
             buttonVariantOffPlus.drawButton(mc, mouseX, mouseY, partialTicks);
             buttonVariantOffMinus.drawButton(mc, mouseX, mouseY, partialTicks);
+
+            if (signal != null && signal.getMode() == SignalMode.AUTO) {
+                buttonVariantNocPlus.drawButton(mc, mouseX, mouseY, partialTicks);
+                buttonVariantNocMinus.drawButton(mc, mouseX, mouseY, partialTicks);
+            }
 
             buttonSave.drawButton(mc, mouseX, mouseY, partialTicks);
 
@@ -113,16 +132,15 @@ public class GuiControllerMaster extends GuiScreen {
             }
 
             if (displayOnFrequency) {
-                fontRenderer.drawString("Display on frequency!", centerX + 70, centerY + 116, Color.RED.getRGB());
+                fontRenderer.drawString("Display on frequency!", centerX + 70, centerY + 126, Color.RED.getRGB());
             }
 
             channelTextField.drawTextBox();
             idTextField.drawTextBox();
 
-            fontRenderer.drawString("Channel", centerX + 60, centerY + 106, 0x000000);
-            fontRenderer.drawString("Signal ID", centerX + 60, centerY + 126, 0x000000);
+            fontRenderer.drawString("Channel", centerX + 60, centerY + 121, 0x000000);
+            fontRenderer.drawString("Signal ID", centerX + 60, centerY + 141, 0x000000);
 
-            GlStateManager.translate(12, 12, 0);
         }
         GlStateManager.popMatrix();
 
@@ -136,8 +154,9 @@ public class GuiControllerMaster extends GuiScreen {
 
         if (tile == null) mc.displayGuiScreen(null);
 
-        variantOnStringLength = fontRenderer.getStringWidth("Signal variant [ON]:" + tile.getVariantOn());
-        variantOffStringLength = fontRenderer.getStringWidth("Signal variant [OFF]:" + tile.getVariantOff());
+        variantOnStringLength = fontRenderer.getStringWidth("Signal variant [Free]:" + tile.getVariantOn());
+        variantOffStringLength = fontRenderer.getStringWidth("Signal variant [Occupied]:" + tile.getVariantOff());
+        variantNocStringLength = fontRenderer.getStringWidth("Signal variant [Mext occupied]:" + tile.getNextOccupied());
 
         if (tile.getVariantOn() > tile.getMaxVariant() || tile.getVariantOff() > tile.getMaxVariant()) {
             tile.setVariantOn(0);
@@ -154,10 +173,13 @@ public class GuiControllerMaster extends GuiScreen {
         buttonList.add(buttonVariantOffPlus = new GuiButton(BUTTON_VARIANT_OFF_PLUS, centerX + variantOffStringLength + 15, centerY + 69 - halfFontHeight, 20, 20, "+"));
         buttonList.add(buttonVariantOffMinus = new GuiButton(BUTTON_VARIANT_OFF_MINUS, centerX + variantOffStringLength + 40, centerY + 69 - halfFontHeight, 20, 20, "-"));
 
+        buttonList.add(buttonVariantNocPlus = new GuiButton(BUTTON_VARIANT_NOC_PLUS, centerX + variantNocStringLength + 15, centerY + 99 - halfFontHeight, 20, 20, "+"));
+        buttonList.add(buttonVariantNocMinus = new GuiButton(BUTTON_VARIANT_NOC_MINUS, centerX + variantNocStringLength + 40, centerY + 99 - halfFontHeight, 20, 20, "-"));
+
         buttonList.add(buttonSave = new GuiButton(BUTTON_SAVE, centerX + 202, centerY + 140, 40, 20, "Save"));
 
-        channelTextField = new GuiTextField(TEXT_CHANNEL, fontRenderer, centerX + 5, centerY + 104, 50, fontRenderer.FONT_HEIGHT + 2);
-        idTextField = new GuiTextField(TEXT_ID, fontRenderer, centerX + 5, centerY + 124, 50, fontRenderer.FONT_HEIGHT + 2);
+        channelTextField = new GuiTextField(TEXT_CHANNEL, fontRenderer, centerX + 5, centerY + 119, 50, fontRenderer.FONT_HEIGHT + 2);
+        idTextField = new GuiTextField(TEXT_ID, fontRenderer, centerX + 5, centerY + 139, 50, fontRenderer.FONT_HEIGHT + 2);
 
         channelTextField.setValidator(NumberUtils::isCreatable);
         idTextField.setValidator(NumberUtils::isCreatable);
@@ -212,15 +234,29 @@ public class GuiControllerMaster extends GuiScreen {
                     tile.setVariantOff(tile.getVariantOff() - 1);
                 }
                 break;
+            case BUTTON_VARIANT_NOC_PLUS:
+                if (tile.getNextOccupied() >= tile.getMaxVariant()) {
+                    tile.setNextOccupied(0);
+                } else {
+                    tile.setNextOccupied(tile.getNextOccupied() + 1);
+                }
+                break;
+            case BUTTON_VARIANT_NOC_MINUS:
+                if (tile.getNextOccupied() <= 0) {
+                    tile.setNextOccupied(tile.getMaxVariant());
+                } else {
+                    tile.setNextOccupied(tile.getNextOccupied() - 1);
+                }
+                break;
+            case BUTTON_SAVE:
+                if (tile.getWorld().isRemote) {
+                    tile.setChannel(Integer.parseInt(channelTextField.getText()));
+                    tile.setId(Integer.parseInt(idTextField.getText()));
+                    PacketGuiReturn packet = new PacketGuiReturn(tile);
+                    PacketDispatcher.sendToServer(packet);
+                }
+                break;
 
-        }
-
-        if (tile.getWorld().isRemote) {
-            tile.setChannel(Integer.parseInt(channelTextField.getText()));
-            tile.setId(Integer.parseInt(idTextField.getText()));
-            PacketGuiReturn packet = new PacketGuiReturn(tile);
-            PacketDispatcher.sendToServer(packet);
-            tile.markDirty();
         }
 
         super.actionPerformed(button);
@@ -232,7 +268,7 @@ public class GuiControllerMaster extends GuiScreen {
             if (!(Signalbox.instance.getChannelDispatcher().getReceiver(tile.getWorld(), Integer.parseInt(channelTextField.getText()), Integer.parseInt(idTextField.getText())) instanceof SignalTileEntity)) {
                 tile.setChannel(0);
                 tile.setId(0);
-            };
+            }
             if (!displayOnFrequency) {
                 if (Integer.parseInt(channelTextField.getText()) <= 0) return;
                 tile.setChannel(Integer.parseInt(channelTextField.getText()));
@@ -251,15 +287,6 @@ public class GuiControllerMaster extends GuiScreen {
         idTextField.textboxKeyTyped(typedChar, keyCode);
 
         super.keyTyped(typedChar, keyCode);
-
-        displayOnFrequency = !(Signalbox.instance.getChannelDispatcher().getReceiver(tile.getWorld(), Integer.parseInt(channelTextField.getText()), Integer.parseInt(idTextField.getText())) instanceof SignalTileEntity);
-
-        if (!displayOnFrequency) {
-            tile.setChannel(Integer.parseInt(channelTextField.getText()));
-            tile.setId(Integer.parseInt(idTextField.getText()));
-            tile.markDirty();
-            signal = (SignalTileEntity) Signalbox.instance.getChannelDispatcher().getReceiver(tile.getWorld(), tile.getChannel(), tile.getId());
-        }
 
     }
 

@@ -13,6 +13,7 @@ import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
@@ -21,6 +22,8 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
 
@@ -33,6 +36,7 @@ public class BlockController extends BaseBlock {
 
     public BlockController(ControllerType type) {
         super(type.getBlockName(), Material.IRON);
+        setCreativeTab(CreativeTabs.TRANSPORTATION);
         this.type = type;
     }
 
@@ -58,18 +62,23 @@ public class BlockController extends BaseBlock {
     }
 
     @Override
+    @SideOnly(Side.CLIENT)
     public boolean onBlockActivated(World worldIn, BlockPos pos, IBlockState state, EntityPlayer playerIn, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ) {
         if (worldIn.isRemote) {
             switch (type) {
                 case SIGNAL_CONTROLLER:
-                    Minecraft.getMinecraft().displayGuiScreen(new GuiControllerMaster((ControllerMasterTileEntity) worldIn.getTileEntity(pos)));
+                    if (worldIn.getTileEntity(pos) instanceof ControllerMasterTileEntity) {
+                        Minecraft.getMinecraft().displayGuiScreen(new GuiControllerMaster((ControllerMasterTileEntity) worldIn.getTileEntity(pos)));
+                    }
                     break;
                 case DISPLAY_CONTROLLER:
-                    Minecraft.getMinecraft().displayGuiScreen(new GuiControllerDisplay((ControllerDisplayTileEntity) worldIn.getTileEntity(pos)));
+                    if (worldIn.getTileEntity(pos) instanceof ControllerDisplayTileEntity) {
+                        Minecraft.getMinecraft().displayGuiScreen(new GuiControllerDisplay((ControllerDisplayTileEntity) worldIn.getTileEntity(pos)));
+                    }
+                    break;
             }
         }
-        System.out.println(hitX * 16 + " " + hitY * 16 + " " + hitZ * 16);
-        return false;
+        return true;
     }
 
     @Override
