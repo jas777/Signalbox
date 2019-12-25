@@ -47,7 +47,6 @@ public class ChannelDispatcher {
         ByteBufUtils.writeUTF8String(buf, variant);
         ((CanReceive) tileEntity).setData(buf);
         tileEntity.markDirty();
-        System.out.println("Dispatch: " + channel + " - " + id + " - " + variant);
         ((CanReceive) tileEntity).updateBlock();
         if (tileEntity.getWorld().getBlockState(tileEntity.getPos()).getBlock() instanceof HasParts) {
             ((HasParts) tileEntity.getWorld().getBlockState(tileEntity.getPos()).getBlock()).updateParts(world, tileEntity.getPos(), tileEntity.getWorld().getBlockState(tileEntity.getPos()));

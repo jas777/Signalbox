@@ -42,6 +42,34 @@ tile.pl_signal_5chambers_head_top.name=PL Signal Head (5 chambers)
 tile.pl_signal_5chambers_head_middle.name=PL Signal Head (5 chambers)
 tile.pl_signal_5chambers_head_bottom.name=PL Signal Head (5 chambers)
 
+tile.pl_signal_4chambers_head_top.name=PL Signal Head (4 chambers)
+tile.pl_signal_4chambers_head_middle_orange.name=PL Signal Head (4 chambers, bottom orange)
+tile.pl_signal_4chambers_head_bottom_orange.name=PL Signal Head (4 chambers, bottom orange)
+tile.pl_signal_4chambers_head_middle_white.name=PL Signal Head (4 chambers, bottom white)
+tile.pl_signal_4chambers_head_bottom_white.name=PL Signal Head (4 chambers, bottom white)
+
+tile.pl_signal_3chambers_head_middle_orange.name=PL Signal Head (3 chambers, bottom orange)
+tile.pl_signal_3chambers_head_bottom_orange.name=PL Signal Head (3 chambers, bottom orange)
+tile.pl_signal_3chambers_head_middle_white.name=PL Signal Head (3 chambers, bottom white)
+tile.pl_signal_3chambers_head_bottom_white.name=PL Signal Head (3 chambers, bottom white)
+
+tile.pl_signal_sbl_3chambers_head_middle.name=PL Signal Head (Automatic, 3 chambers)
+tile.pl_signal_sbl_3chambers_head_bottom.name=PL Signal Head (Automatic, 3 chambers)
+
+tile.pl_signal_repeater_3chambers_head_middle.name=PL Signal Repeater Head (3 chambers)
+tile.pl_signal_repeater_3chambers_head_bottom.name=PL Signal Repeater Head (3 chambers)
+
+tile.pl_signal_2chambers_head_top.name=PL Signal Head (2 chambers)
+tile.pl_signal_2chambers_head_bottom.name=PL Signal Head (2 chambers)
+
+tile.pl_signal_2chambers_distant_head_top.name=PL Distant Signal Head (2 chambers)
+tile.pl_signal_2chambers_distant_head_bottom.name=PL Distant Signal Head (2 chambers)
+
+tile.pl_signal_shunting_2chambers_head_top.name=PL Shunting Signal Head (2 chambers)
+tile.pl_signal_shunting_2chambers_head_bottom.name=PL Shunting Signal Head (2 chambers)
+
+tile.pl_signal_1chambers_head.name=PL Signal Head (1 chamber)
+
 tile.pl_tm_ground_head.name=PL Tm Head (ground)
 
 # FI

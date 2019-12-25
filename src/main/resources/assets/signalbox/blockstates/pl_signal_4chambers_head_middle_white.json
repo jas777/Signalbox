@@ -3,8 +3,8 @@
   "defaults": {
     "model": "signalbox:pl_signal_4chambers_head_middle",
     "textures": {
-      "lamp_top": "blocks/concrete_black",
-	  "lamp_bottom": "signalbox:blocks/red"
+      "lamp_top": "signalbox:blocks/red",
+	  "lamp_bottom": "blocks/concrete_black"
     }
   },
   "variants": {
@@ -26,8 +26,8 @@
     "signal_variant": {
       "0": {
         "textures": {
-		  "lamp_top": "blocks/concrete_black",
-		  "lamp_bottom": "signalbox:blocks/red"
+		  "lamp_top": "signalbox:blocks/red",
+		  "lamp_bottom": "blocks/concrete_black"
         }
       },
       "1": {

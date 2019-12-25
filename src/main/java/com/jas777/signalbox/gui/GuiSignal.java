@@ -97,14 +97,6 @@ public class GuiSignal extends GuiScreen {
             fontRenderer.drawString("Signal ID", centerX + 60, centerY + 116, 0x000000);
         }
         GlStateManager.popMatrix();
-        GlStateManager.pushMatrix();
-        {
-            drawTexturedModalRect(10, 10, sprite, sprite.getIconWidth(), sprite.getIconHeight());
-            if (sprite.hasAnimationMetadata()) {
-                sprite.updateAnimation();
-            }
-        }
-
     }
 
     @Override

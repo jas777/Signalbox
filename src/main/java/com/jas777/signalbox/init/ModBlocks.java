@@ -60,6 +60,29 @@ public class ModBlocks {
     public static final Block PL_SIGNAL_4_HEAD_MIDDLE_WHITE = new BlockPlSignal4ChambersHeadMiddleWhite();
     public static final Block PL_SIGNAL_4_HEAD_BOTTOM_WHITE = new BlockPlSignal4ChambersHeadBottomWhite();
 
+    public static final Block PL_SIGNAL_3_HEAD_TOP_ORANGE = new BlockPlSignal3ChambersHeadTopOrange();
+    public static final Block PL_SIGNAL_3_HEAD_BOTTOM_ORANGE = new BlockPlSignal3ChambersHeadBottomOrange();
+
+    public static final Block PL_SIGNAL_3_HEAD_TOP_WHITE = new BlockPlSignal3ChambersHeadTopWhite();
+    public static final Block PL_SIGNAL_3_HEAD_BOTTOM_WHITE = new BlockPlSignal3ChambersHeadBottomWhite();
+
+    public static final Block PL_SIGNAL_2_HEAD_TOP = new BlockPlSignal2ChambersHeadTop();
+    public static final Block PL_SIGNAL_2_HEAD_BOTTOM = new BlockPlSignal2ChambersHeadBottom();
+
+    public static final Block PL_SIGNAL_1_HEAD = new BlockPlSignal1ChambersHead();
+
+    public static final Block PL_SIGNAL_SBL_3_HEAD_TOP = new BlockPlSignal3ChambersSBLHeadTop();
+    public static final Block PL_SIGNAL_SBL_3_HEAD_BOTTOM = new BlockPlSignal3ChambersSBLHeadBottom();
+
+    public static final Block PL_SIGNAL_REPEATER_3_HEAD_TOP = new BlockPlSignal3ChambersRepeaterHeadTop();
+    public static final Block PL_SIGNAL_REPEATER_3_HEAD_BOTTOM = new BlockPlSignal3ChambersRepeaterHeadBottom();
+
+    public static final Block PL_SIGNAL_2_DISTANT_HEAD_TOP = new BlockPlSignal2ChambersDistantHeadTop();
+    public static final Block PL_SIGNAL_2_DISTANT_HEAD_BOTTOM = new BlockPlSignal2ChambersDistantHeadBottom();
+
+    public static final Block PL_SIGNAL_2_SHUNTING_HEAD_TOP = new BlockPlSignal2ChambersShuntingHeadTop();
+    public static final Block PL_SIGNAL_2_SHUNTING_HEAD_BOTTOM = new BlockPlSignal2ChambersShuntingHeadBottom();
+
     // SBL
 //    public static final Block PL_2STATE_HEAD = new BlockPl2StateHead();
 //    public static final Block PL_3STATE_HEAD = new BlockPl3StateHead();

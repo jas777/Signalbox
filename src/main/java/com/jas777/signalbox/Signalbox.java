@@ -30,7 +30,7 @@ public class Signalbox {
 
     public static final String MODID = "signalbox";
     public static final String NAME = "Signalbox";
-    public static final String VERSION = "0.0.1";
+    public static final String VERSION = "0.0.2";
 
     public static final Logger logger = LogManager.getLogger();
 

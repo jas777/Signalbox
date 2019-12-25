@@ -215,6 +215,9 @@ public class ControllerMasterTileEntity extends TileEntity implements ITickable,
     }
 
     public SignalTileEntity getSignal() {
+
+        if (world == null || Signalbox.instance == null) return null;
+
         if (!world.isRemote) {
             if (Signalbox.instance.getChannelDispatcher() != null) {
                 Channel dispatchChannel = Signalbox.instance.getChannelDispatcher().getChannels().get(channel);
@@ -224,6 +227,7 @@ public class ControllerMasterTileEntity extends TileEntity implements ITickable,
                 return (SignalTileEntity) tileEntity;
             }
         }
+
         return null;
     }
 
