@@ -7,8 +7,7 @@ import java.util.List;
 
 public class ModItems {
 
+    // List of all items from Signalbox
     public static final List<Item> ITEMS = new ArrayList<Item>();
-
-    //public static final Item SIGNAL_LINKER = new ItemSignalLinker();
 
 }

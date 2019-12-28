@@ -1,8 +1,8 @@
-package com.jas777.signalbox.items;
+package com.jas777.signalbox.base;
 
 import com.jas777.signalbox.Signalbox;
 import com.jas777.signalbox.init.ModItems;
-import com.jas777.signalbox.util.HasModel;
+import com.jas777.signalbox.util.interfaces.HasModel;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 
