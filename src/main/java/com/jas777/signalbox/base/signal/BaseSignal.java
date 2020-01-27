@@ -1,4 +1,4 @@
-package com.jas777.signalbox.base;
+package com.jas777.signalbox.base.signal;
 
 import com.jas777.signalbox.Signalbox;
 import com.jas777.signalbox.init.ModBlocks;
@@ -21,11 +21,11 @@ import net.minecraftforge.client.model.ModelLoader;
 
 import java.util.Objects;
 
-public class BaseBlock extends Block implements HasModel {
+public abstract class BaseSignal extends Block implements HasModel {
 
     public static final PropertyDirection FACING = PropertyDirection.create("facing", EnumFacing.Plane.HORIZONTAL);
 
-    public BaseBlock(String name, Material material) {
+    public BaseSignal(String name, Material material) {
         super(material);
 
         setUnlocalizedName(name);

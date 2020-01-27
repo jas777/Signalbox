@@ -1,5 +1,6 @@
 package com.jas777.signalbox;
 
+import com.jas777.signalbox.control.ChannelDispatcher;
 import com.jas777.signalbox.proxy.CommonProxy;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
@@ -18,6 +19,8 @@ public class Signalbox {
 
     public static SimpleNetworkWrapper network;
 
+    public static ChannelDispatcher channelDispatcher;
+
     public static final String MODID = "signalbox";
     public static final String NAME = "Signalbox";
     public static final String VERSION = "0.0.2";
@@ -32,6 +35,7 @@ public class Signalbox {
     public void preInit(FMLPreInitializationEvent event) {
 
         network = NetworkRegistry.INSTANCE.newSimpleChannel(MODID);
+        channelDispatcher = new ChannelDispatcher();
 
     }
 

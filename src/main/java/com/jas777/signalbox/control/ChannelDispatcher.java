@@ -1,5 +1,7 @@
 package com.jas777.signalbox.control;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.HashMap;
 
 public class ChannelDispatcher {
@@ -35,6 +37,12 @@ public class ChannelDispatcher {
 
     public void sendMessage(ControlChannel channel, ChannelMessage message) {
         channel.getTuned().forEach((subFreq, device) -> device.handleMessage(message));
+    }
+
+    public ControlChannel getChannelFromFrequency(String frequency) {
+        if (StringUtils.split(frequency, '.').length < 1) return null;
+        int freq = Integer.parseInt(StringUtils.split(frequency, '.')[0]);
+        return getChannel(freq);
     }
 
 }

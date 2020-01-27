@@ -49,4 +49,9 @@ public class ControlChannel {
         });
 
     }
+
+    public String getFrequencyAsString(int subFrequency) {
+        return frequency + "." + subFrequency;
+    }
+
 }
