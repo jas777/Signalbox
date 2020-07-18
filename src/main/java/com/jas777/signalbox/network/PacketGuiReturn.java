@@ -33,7 +33,7 @@ public class PacketGuiReturn extends SignalPacket {
     @Override
     public void writeData(SignalboxOutputStream data) throws IOException {
 
-        data.writeInt(Objects.requireNonNull(object.theWorld()).provider.getDimension());
+        data.writeInt(Objects.requireNonNull(object.getTheWorld()).provider.getDimension());
 
         if (object instanceof TileEntity) {
 

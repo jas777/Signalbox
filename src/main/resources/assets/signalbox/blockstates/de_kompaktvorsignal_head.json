@@ -52,8 +52,7 @@
           "lamp_right_bottom": "blocks/concrete_black",
           "lamp_right_top": "signalbox:blocks/green_light"
         }
-      },
-      "3": {}
+      }
     },
     "inventory": [{}]
   }

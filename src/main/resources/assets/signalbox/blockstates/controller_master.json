@@ -21,10 +21,6 @@
     },
     "inventory": [
       {}
-    ],
-    "active": {
-      "true": {},
-      "false": {}
-    }
+    ]
   }
 }

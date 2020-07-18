@@ -1,6 +1,10 @@
 package com.jas777.signalbox;
 
 import com.jas777.signalbox.control.ChannelDispatcher;
+import com.jas777.signalbox.network.packet.PacketRequestUpdateSignal;
+import com.jas777.signalbox.network.packet.PacketRequestUpdateSignalController;
+import com.jas777.signalbox.network.packet.PacketUpdateSignal;
+import com.jas777.signalbox.network.packet.PacketUpdateSignalController;
 import com.jas777.signalbox.proxy.CommonProxy;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
@@ -10,6 +14,7 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
+import net.minecraftforge.fml.relauncher.Side;
 
 @Mod(modid = Signalbox.MODID, name = Signalbox.NAME, version = Signalbox.VERSION)
 public class Signalbox {
@@ -35,6 +40,13 @@ public class Signalbox {
     public void preInit(FMLPreInitializationEvent event) {
 
         network = NetworkRegistry.INSTANCE.newSimpleChannel(MODID);
+
+        network.registerMessage(new PacketUpdateSignal.Handler(), PacketUpdateSignal.class, 0, Side.CLIENT);
+        network.registerMessage(new PacketRequestUpdateSignal.Handler(), PacketRequestUpdateSignal.class, 1 , Side.SERVER);
+
+        network.registerMessage(new PacketUpdateSignalController.Handler(), PacketUpdateSignalController.class, 2, Side.CLIENT);
+        network.registerMessage(new PacketRequestUpdateSignalController.Handler(), PacketRequestUpdateSignalController.class, 3, Side.SERVER);
+
         channelDispatcher = new ChannelDispatcher();
 
     }

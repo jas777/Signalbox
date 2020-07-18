@@ -9,10 +9,8 @@ import java.io.IOException;
 
 public interface GuiUpdateHandler extends HasWorld {
 
-    default void writeGuiData(SignalboxOutputStream data) throws IOException {
-    }
+    default void writeGuiData(SignalboxOutputStream data) throws IOException {}
 
-    default void readGuiData(SignalboxInputStream data, EntityPlayer sender) throws IOException {
-    }
+    default void readGuiData(SignalboxInputStream data, EntityPlayer sender) throws IOException {}
 
 }

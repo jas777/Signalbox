@@ -1,6 +1,6 @@
 package com.jas777.signalbox.control;
 
-public interface Controllable<T> {
+public interface Controllable<T, C> {
 
     int frequency = 0;
 
@@ -10,6 +10,6 @@ public interface Controllable<T> {
 
     void handleMessage(ChannelMessage<T> message);
 
-    void sendMessage(ChannelMessage message);
+    void sendMessage(ChannelMessage<C> message);
 
 }

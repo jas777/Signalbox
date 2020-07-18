@@ -6,7 +6,7 @@ import java.util.HashMap;
 
 public class ChannelDispatcher {
 
-    private HashMap<Integer, ControlChannel> channels;
+    private final HashMap<Integer, ControlChannel> channels;
 
     public ChannelDispatcher() {
         this.channels = new HashMap<Integer, ControlChannel>();
@@ -25,24 +25,24 @@ public class ChannelDispatcher {
 
         if (channels.containsKey(frequency)) return getChannel(frequency);
 
-        ControlChannel channel = new ControlChannel(frequency);
+        channels.put(frequency, new ControlChannel(frequency));
 
-        return channels.put(frequency, channel);
+        return channels.get(frequency);
 
     }
 
-    public void sendMessage(int frequency, ChannelMessage message) {
-        channels.get(frequency).getTuned().forEach((subFreq, device) -> device.handleMessage(message));
-    }
-
-    public void sendMessage(ControlChannel channel, ChannelMessage message) {
-        channel.getTuned().forEach((subFreq, device) -> device.handleMessage(message));
-    }
+//    public <T extends Controllable<?>> void sendMessage(int frequency, ChannelMessage<T> message) {
+//        channels.get(frequency).getTuned().forEach((subFreq, device) -> device.handleMessage(message));
+//    }
+//
+//    public <T extends Controllable<?>> void sendMessage(ControlChannel channel, ChannelMessage<T> message) {
+//        channel.getTuned().forEach((subFreq, device) -> device.handleMessage(message));
+//    }
 
     public ControlChannel getChannelFromFrequency(String frequency) {
         if (StringUtils.split(frequency, '.').length < 1) return null;
         int freq = Integer.parseInt(StringUtils.split(frequency, '.')[0]);
-        return getChannel(freq);
+        return freq > 0 ? getChannel(freq) : null;
     }
 
 }

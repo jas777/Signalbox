@@ -1,51 +1,50 @@
 package com.jas777.signalbox.control;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ControlChannel {
 
     private int frequency;
 
-    private HashMap<Integer, Controllable> tuned;
+    private HashMap<Integer, List<Controllable>> tuned;
 
     public ControlChannel(int frequency) {
         if (frequency <= 0) throw new Error("ID cannot be lower than 1!");
         this.frequency = frequency;
-        this.tuned = new HashMap<Integer, Controllable>();
+        this.tuned = new HashMap<Integer, List<Controllable>>();
     }
 
     public int getFrequency() {
         return frequency;
     }
 
-    public HashMap<Integer, Controllable> getTuned() {
+    public Map<Integer, List<Controllable>> getTuned() {
         return tuned;
     }
 
-    public void tune(int subFreq, Controllable device) {
+    public ControlChannel tune(int subFreq, Controllable device) {
 
-        if (tuned.get(subFreq) != null) {
-            tuned.replace(subFreq, device);
+        if (!tuned.containsKey(subFreq)) tuned.put(subFreq, new ArrayList<>());
+
+        if (tuned.get(subFreq).contains(device)) {
+            return this;
         } else {
-            tuned.put(subFreq, device);
+            tuned.get(subFreq).add(device);
         }
 
-    }
-
-    public void remove(int subFreq) {
-
-        if (!tuned.containsKey(subFreq)) return;
-
-        tuned.remove(subFreq);
+        return this;
 
     }
 
     public void remove(Controllable device) {
 
-        if (!tuned.containsValue(device)) return;
+        if (!tuned.containsKey(device.getFrequency())) return;
 
-        tuned.forEach((subFreq, controllable) -> {
-            if (controllable == device) tuned.remove(subFreq);
+        tuned.forEach((subFreq, list) -> {
+            list.remove(device);
         });
 
     }
