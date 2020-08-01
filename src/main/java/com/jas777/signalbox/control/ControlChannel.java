@@ -27,6 +27,8 @@ public class ControlChannel {
 
     public ControlChannel tune(int subFreq, Controllable device) {
 
+        if (subFreq < 1) return this;
+
         if (!tuned.containsKey(subFreq)) tuned.put(subFreq, new ArrayList<>());
 
         if (tuned.get(subFreq).contains(device)) {

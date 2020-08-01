@@ -1,9 +1,9 @@
 package com.jas777.signalbox.blocks.controllers;
 
 import com.jas777.signalbox.base.controller.BaseController;
-import com.jas777.signalbox.base.signal.SignalMode;
 import com.jas777.signalbox.gui.MasterControllerGui;
 import com.jas777.signalbox.tileentity.SignalControllerTileEntity;
+import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
@@ -22,6 +22,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
+import java.util.Random;
 
 public class BlockMasterController extends BaseController {
 
@@ -81,10 +82,70 @@ public class BlockMasterController extends BaseController {
 
     @Override
     public boolean canConnectRedstone(IBlockState state, IBlockAccess world, BlockPos pos, @Nullable EnumFacing side) {
-        if (world.getTileEntity(pos) instanceof SignalControllerTileEntity) {
-            SignalControllerTileEntity tileEntity = (SignalControllerTileEntity) world.getTileEntity(pos);
-            return tileEntity.getMode() == SignalMode.ANALOG;
-        }
+//        if (world.getTileEntity(pos) instanceof SignalControllerTileEntity) {
+//            SignalControllerTileEntity tileEntity = (SignalControllerTileEntity) world.getTileEntity(pos);
+//            return tileEntity.getMode() == SignalMode.ANALOG;
+//        }
+//        return false;
         return false;
     }
+
+    @Override
+    public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state) {
+
+        //if (!worldIn.isRemote) {
+
+        if (worldIn.getTileEntity(pos) instanceof SignalControllerTileEntity) {
+            SignalControllerTileEntity tileEntity = (SignalControllerTileEntity) worldIn.getTileEntity(pos);
+
+            if (tileEntity.isActive() != worldIn.isBlockPowered(pos)) {
+                tileEntity.setActive(worldIn.isBlockPowered(pos));
+                tileEntity.markDirty();
+            }
+        }
+
+        //}
+
+        super.onBlockAdded(worldIn, pos, state);
+    }
+
+    @Override
+    public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
+
+        //if (!worldIn.isRemote) {
+
+        if (worldIn.getTileEntity(pos) instanceof SignalControllerTileEntity) {
+            SignalControllerTileEntity tileEntity = (SignalControllerTileEntity) worldIn.getTileEntity(pos);
+
+            if (tileEntity.isActive() != worldIn.isBlockPowered(pos)) {
+                tileEntity.setActive(worldIn.isBlockPowered(pos));
+                tileEntity.updateConnected();
+                tileEntity.markDirty();
+            }
+        }
+
+        //}
+
+        super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
+    }
+
+    @Override
+    public void updateTick(World worldIn, BlockPos pos, IBlockState state, Random rand) {
+
+        //if (!worldIn.isRemote) {
+
+        if (worldIn.getTileEntity(pos) instanceof SignalControllerTileEntity) {
+            SignalControllerTileEntity tileEntity = (SignalControllerTileEntity) worldIn.getTileEntity(pos);
+
+            if (tileEntity.isActive() != worldIn.isBlockPowered(pos)) {
+                tileEntity.setActive(worldIn.isBlockPowered(pos));
+                tileEntity.markDirty();
+            }
+        }
+
+        //}
+
+        super.updateTick(worldIn, pos, state, rand);
+    }
+
 }

@@ -57,8 +57,9 @@ public class PacketUpdateSignal implements IMessage {
                 SignalTileEntity signal = (SignalTileEntity) te;
 
                 if (message.frequency != 0 && message.channel != 0) {
-                    signal.setFrequency(message.frequency);
-                    signal.setChannel(Signalbox.channelDispatcher.getChannel(message.channel));
+                    signal.setFrequency(message.channel);
+                    signal.setChannel(Signalbox.channelDispatcher.addChannel(message.channel));
+                    signal.getChannel().tune(message.frequency, signal);
                 }
 
             });

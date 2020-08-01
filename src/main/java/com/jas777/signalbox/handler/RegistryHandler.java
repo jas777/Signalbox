@@ -3,7 +3,7 @@ package com.jas777.signalbox.handler;
 import com.jas777.signalbox.Signalbox;
 import com.jas777.signalbox.init.ModBlocks;
 import com.jas777.signalbox.init.ModItems;
-import com.jas777.signalbox.tileentity.ControllerTileEntity;
+import com.jas777.signalbox.tileentity.SignalControllerTileEntity;
 import com.jas777.signalbox.tileentity.SignalTileEntity;
 import com.jas777.signalbox.util.interfaces.HasModel;
 import net.minecraft.block.Block;
@@ -43,7 +43,8 @@ public class RegistryHandler {
     public static void onBlockRegister(RegistryEvent.Register<Block> event) {
         event.getRegistry().registerAll(ModBlocks.BLOCKS.toArray(new Block[0]));
         GameRegistry.registerTileEntity(SignalTileEntity.class, new ResourceLocation(Signalbox.MODID + ":signal_entity"));
-        GameRegistry.registerTileEntity(ControllerTileEntity.class, new ResourceLocation(Signalbox.MODID + ":controller_entity"));
+        // GameRegistry.registerTileEntity(ControllerTileEntity.class, new ResourceLocation(Signalbox.MODID + ":controller_entity"));
+        GameRegistry.registerTileEntity(SignalControllerTileEntity.class, new ResourceLocation(Signalbox.MODID + ":signal_master_controller"));
         Signalbox.proxy.registerRender();
     }
 

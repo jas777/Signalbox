@@ -17,7 +17,12 @@ public class ControllerTileEntity<T> extends TileEntity implements Controllable<
     public void sendMessage(ChannelMessage<T> message) {
         if (channel == null) return;
         List<Controllable> devices = channel.getTuned().get(subFrequency);
-        devices.forEach(c -> c.handleMessage(message));
+        devices.forEach(c -> {
+            try {
+                T pleaseDoNotCrash = (T) c;
+                c.handleMessage(message);
+            } catch (ClassCastException ignored) {}
+        });
     }
 
     @Override

@@ -161,6 +161,8 @@ public abstract class BaseSignal extends Block implements HasModel, SignalVarian
 
             assert tileEntity != null;
 
+            tileEntity.updateSignal();
+
             playerIn.sendMessage(new TextComponentString(tileEntity.getChannel().getFrequency() + "." + tileEntity.getFrequency()));
         }
 

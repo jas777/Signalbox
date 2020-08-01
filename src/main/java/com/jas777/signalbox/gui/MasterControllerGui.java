@@ -184,7 +184,7 @@ public class MasterControllerGui extends GuiScreen {
             if (tileEntity.getMode() == SignalMode.AUTO) {
                 fontRenderer.drawString("Signal variant [§aFree§r]: " + tileEntity.getVariantOn(), centerX + 5, centerY + 45, 0);
                 fontRenderer.drawString("Signal variant [§cOccupied§r]: " + tileEntity.getVariantOff(), centerX + 5, centerY + 70, 0);
-                fontRenderer.drawString("Signal variant [§eNext occupied§r]: " + tileEntity.getVariantOff(), centerX + 5, centerY + 95, 0);
+                fontRenderer.drawString("Signal variant [§eNext occupied§r]: " + tileEntity.getVariantNoc(), centerX + 5, centerY + 95, 0);
 
                 buttonVariantOnPlus.drawButton(mc, mouseX, mouseY, partialTicks);
                 buttonVariantOnMinus.drawButton(mc, mouseX, mouseY, partialTicks);
@@ -248,6 +248,9 @@ public class MasterControllerGui extends GuiScreen {
 
             fontRenderer.drawString("Channel: §9" + tileEntity.getFrequency(), centerX + 15 + plusWidth * 6, centerY + 125, 0);
             fontRenderer.drawString("Frequency: §2" + tileEntity.getSubFrequency(), centerX + 15 + plusWidth * 6, centerY + 145, 0);
+
+            fontRenderer.drawString("█", centerX, centerY + 170, tileEntity.isActive() ? 0x00FF00 : 0xFF0000);
+
         }
         GlStateManager.popMatrix();
     }
@@ -311,11 +314,11 @@ public class MasterControllerGui extends GuiScreen {
                 if (tileEntity.getChannel() == null) {
                     tileEntity.setFrequency(1);
                     tileEntity.setChannel(Signalbox.channelDispatcher.addChannel(1));
-                    break;
+                } else {
+                    tileEntity.setFrequency(tileEntity.getChannel().getFrequency() + 1);
+                    tileEntity.setChannel(Signalbox.channelDispatcher.addChannel(tileEntity.getFrequency()));
+                    tileEntity.getChannel().tune(tileEntity.getSubFrequency(), tileEntity);
                 }
-                tileEntity.setFrequency(tileEntity.getChannel().getFrequency() + 1);
-                tileEntity.setChannel(Signalbox.channelDispatcher.addChannel(tileEntity.getChannel().getFrequency()));
-                tileEntity.getChannel().tune(tileEntity.getSubFrequency(), tileEntity);
                 break;
             case BUTTON_CHANNEL_PLUS_TEN:
                 if (tileEntity.getChannel() == null) {
@@ -324,7 +327,7 @@ public class MasterControllerGui extends GuiScreen {
                     break;
                 }
                 tileEntity.setFrequency(tileEntity.getChannel().getFrequency() + 10);
-                tileEntity.setChannel(Signalbox.channelDispatcher.addChannel(tileEntity.getChannel().getFrequency() + 10));
+                tileEntity.setChannel(Signalbox.channelDispatcher.addChannel(tileEntity.getFrequency()));
                 tileEntity.getChannel().tune(tileEntity.getSubFrequency(), tileEntity);
                 break;
             case BUTTON_CHANNEL_PLUS_HUNDRED:
@@ -334,7 +337,7 @@ public class MasterControllerGui extends GuiScreen {
                     break;
                 }
                 tileEntity.setFrequency(tileEntity.getChannel().getFrequency() + 100);
-                tileEntity.setChannel(Signalbox.channelDispatcher.addChannel(tileEntity.getChannel().getFrequency() + 100));
+                tileEntity.setChannel(Signalbox.channelDispatcher.addChannel(tileEntity.getFrequency()));
                 tileEntity.getChannel().tune(tileEntity.getSubFrequency(), tileEntity);
                 break;
             case BUTTON_CHANNEL_MINUS_ONE:
@@ -343,10 +346,11 @@ public class MasterControllerGui extends GuiScreen {
                 }
                 tileEntity.setFrequency(tileEntity.getChannel().getFrequency() - 1);
 
-                if (tileEntity.getFrequency() > 1) {
-                    tileEntity.setChannel(Signalbox.channelDispatcher.addChannel(tileEntity.getChannel().getFrequency() - 1));
+                if (tileEntity.getFrequency() > 0) {
+                    tileEntity.setChannel(Signalbox.channelDispatcher.addChannel(tileEntity.getFrequency()));
                     tileEntity.getChannel().tune(tileEntity.getSubFrequency(), tileEntity);
                 } else {
+                    tileEntity.setFrequency(0);
                     tileEntity.setChannel(null);
                 }
 
@@ -357,10 +361,11 @@ public class MasterControllerGui extends GuiScreen {
                 }
                 tileEntity.setFrequency(tileEntity.getChannel().getFrequency() - 10);
 
-                if (tileEntity.getFrequency() > 1) {
-                    tileEntity.setChannel(Signalbox.channelDispatcher.addChannel(tileEntity.getChannel().getFrequency() - 10));
+                if (tileEntity.getFrequency() > 0) {
+                    tileEntity.setChannel(Signalbox.channelDispatcher.addChannel(tileEntity.getFrequency()));
                     tileEntity.getChannel().tune(tileEntity.getSubFrequency(), tileEntity);
                 } else {
+                    tileEntity.setFrequency(0);
                     tileEntity.setChannel(null);
                 }
 
@@ -371,10 +376,11 @@ public class MasterControllerGui extends GuiScreen {
                 }
                 tileEntity.setFrequency(tileEntity.getChannel().getFrequency() - 100);
 
-                if (tileEntity.getFrequency() > 1) {
-                    tileEntity.setChannel(Signalbox.channelDispatcher.addChannel(tileEntity.getChannel().getFrequency() - 100));
+                if (tileEntity.getFrequency() > 0) {
+                    tileEntity.setChannel(Signalbox.channelDispatcher.addChannel(tileEntity.getFrequency()));
                     tileEntity.getChannel().tune(tileEntity.getSubFrequency(), tileEntity);
                 } else {
+                    tileEntity.setFrequency(0);
                     tileEntity.setChannel(null);
                 }
 
@@ -399,7 +405,7 @@ public class MasterControllerGui extends GuiScreen {
                 break;
             case BUTTON_FREQUENCY_MINUS_ONE:
                 if (tileEntity.getSubFrequency() - 1 > 0) {
-                    tileEntity.setSubFrequency(tileEntity.getSubFrequency() + 1);
+                    tileEntity.setSubFrequency(tileEntity.getSubFrequency() - 1);
                     if (tileEntity.getChannel() != null) {
                         tileEntity.getChannel().tune(tileEntity.getSubFrequency(), tileEntity);
                     }
@@ -433,7 +439,6 @@ public class MasterControllerGui extends GuiScreen {
         if (tileEntity.getWorld().isRemote) {
             PacketGuiReturn packet = new PacketGuiReturn(tileEntity);
             PacketDispatcher.sendToServer(packet);
-            tileEntity.markDirty();
         }
     }
 }

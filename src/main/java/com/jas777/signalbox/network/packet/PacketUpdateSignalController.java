@@ -18,8 +18,9 @@ public class PacketUpdateSignalController implements IMessage {
     private int variantOff;
     private int variantNoc;
     private SignalMode mode;
+    private boolean active;
 
-    public PacketUpdateSignalController(BlockPos pos, int frequency, int subFrequency, int variantOn, int variantOff, int variantNoc, SignalMode mode) {
+    public PacketUpdateSignalController(BlockPos pos, int frequency, int subFrequency, int variantOn, int variantOff, int variantNoc, SignalMode mode, boolean active) {
         this.pos = pos;
         this.frequency = frequency;
         this.subFrequency = subFrequency;
@@ -27,10 +28,11 @@ public class PacketUpdateSignalController implements IMessage {
         this.variantOff = variantOff;
         this.variantNoc = variantNoc;
         this.mode = mode;
+        this.active = active;
     }
 
     public PacketUpdateSignalController(SignalControllerTileEntity te) {
-        this(te.getPos(), te.getFrequency(), te.getSubFrequency(), te.getVariantOn(), te.getVariantOff(), te.getVariantNoc(), te.getMode());
+        this(te.getPos(), te.getFrequency(), te.getSubFrequency(), te.getVariantOn(), te.getVariantOff(), te.getVariantNoc(), te.getMode(), te.isActive());
     }
 
     public PacketUpdateSignalController() {}
@@ -44,6 +46,7 @@ public class PacketUpdateSignalController implements IMessage {
         variantOff = buf.readInt();
         variantNoc = buf.readInt();
         mode = SignalMode.values()[buf.readInt()];
+        active = buf.readBoolean();
     }
 
     @Override
@@ -55,6 +58,7 @@ public class PacketUpdateSignalController implements IMessage {
         buf.writeInt(variantOff);
         buf.writeInt(variantNoc);
         buf.writeInt(mode.ordinal());
+        buf.writeBoolean(active);
     }
 
     public static class Handler implements IMessageHandler<PacketUpdateSignalController, IMessage> {
@@ -69,6 +73,16 @@ public class PacketUpdateSignalController implements IMessage {
                 te.setVariantOff(message.variantOff);
                 te.setVariantNoc(message.variantNoc);
                 te.setMode(message.mode);
+                te.setActive(message.active);
+                System.out.println(message.frequency);
+                System.out.println(message.subFrequency);
+                System.out.println(message.variantOn);
+                System.out.println(message.variantOff);
+                System.out.println(message.variantNoc);
+                System.out.println(message.mode);
+                System.out.println(message.active);
+                System.out.println(te);
+                System.out.println("---------------");
             });
             return null;
         }

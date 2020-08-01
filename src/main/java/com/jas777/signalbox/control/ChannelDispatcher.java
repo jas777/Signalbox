@@ -42,7 +42,7 @@ public class ChannelDispatcher {
     public ControlChannel getChannelFromFrequency(String frequency) {
         if (StringUtils.split(frequency, '.').length < 1) return null;
         int freq = Integer.parseInt(StringUtils.split(frequency, '.')[0]);
-        return freq > 0 ? getChannel(freq) : null;
+        return freq > 0 ? addChannel(freq) : null;
     }
 
 }

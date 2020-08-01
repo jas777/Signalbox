@@ -22,6 +22,10 @@ import java.util.stream.Collectors;
 
 public class SignalControllerTileEntity extends ControllerTileEntity<SignalTileEntity> implements GuiUpdateHandler {
 
+    // Redstone-related
+
+    private boolean active = false;
+
     // Signal variants
 
     private int variantOn = 0;
@@ -41,9 +45,14 @@ public class SignalControllerTileEntity extends ControllerTileEntity<SignalTileE
 
         if (!compound.getString("frequency").isEmpty()) {
             setChannel(Signalbox.channelDispatcher.getChannelFromFrequency(compound.getString("frequency")));
+            setFrequency(getChannel().getFrequency());
             setSubFrequency(Integer.parseInt(StringUtils.split(compound.getString("frequency"), '.')[1]));
             if (getChannel() != null) getChannel().tune(getSubFrequency(), this);
         }
+
+        this.active = compound.getBoolean("active");
+
+        super.readFromNBT(compound);
     }
 
     @Override
@@ -55,7 +64,13 @@ public class SignalControllerTileEntity extends ControllerTileEntity<SignalTileE
 
         if (getChannel() != null) {
             compound.setString("frequency", getChannel().getFrequencyAsString(getSubFrequency()));
+        } else {
+            compound.setString("frequency", "");
         }
+
+        compound.setBoolean("active", active);
+
+        super.writeToNBT(compound);
 
         return compound;
     }
@@ -100,7 +115,7 @@ public class SignalControllerTileEntity extends ControllerTileEntity<SignalTileE
         if (getChannel() == null || getSubFrequency() == 0) return 0;
         return Collections.max(getChannel().getTuned().get(getSubFrequency()).stream().map(device -> {
             if (device instanceof SignalTileEntity) {
-                return ((SignalTileEntity) device).getSignalVariant();
+                return ((SignalTileEntity) device).getMaxSignalVariant();
             } else {
                 return 0;
             }
@@ -126,7 +141,6 @@ public class SignalControllerTileEntity extends ControllerTileEntity<SignalTileE
         } else {
             data.writeUTF("");
         }
-        System.out.println(data.toString());
     }
 
     public void readGuiData(SignalboxInputStream data, EntityPlayer sender) throws IOException {
@@ -143,7 +157,7 @@ public class SignalControllerTileEntity extends ControllerTileEntity<SignalTileE
             setSubFrequency(Integer.parseInt(StringUtils.split(frequencyString, '.')[1]));
             if (getChannel() != null) getChannel().tune(getSubFrequency(), this);
         }
-        System.out.println(getFrequency());
+        markDirty();
     }
 
     @Override
@@ -154,6 +168,24 @@ public class SignalControllerTileEntity extends ControllerTileEntity<SignalTileE
     @Override
     public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newSate) {
         return false;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+        if (!world.isRemote) {
+            Signalbox.network.sendToAllAround(new PacketUpdateSignalController(this), new NetworkRegistry.TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 64));
+        }
+    }
+
+    public void updateConnected() {
+        sendMessage(target -> {
+            target.setSignalVariant(active ? getVariantOn() : getVariantOff());
+            target.updateSignal();
+        });
     }
 
     @Override

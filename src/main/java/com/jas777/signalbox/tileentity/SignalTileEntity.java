@@ -18,6 +18,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.Collections;
+
 public class SignalTileEntity extends TileEntity implements Controllable<SignalTileEntity, ControllerTileEntity<SignalTileEntity>> {
 
     private ControlChannel channel = null;
@@ -100,6 +102,11 @@ public class SignalTileEntity extends TileEntity implements Controllable<SignalT
     @Override
     public ControlChannel getChannel() {
         return this.channel;
+    }
+
+    public int getMaxSignalVariant() {
+        SignalVariants variants = (SignalVariants) world.getBlockState(pos).getBlock();
+        return Collections.max(variants.getSignalVariant().getAllowedValues());
     }
 
     public int getSignalVariant() {
