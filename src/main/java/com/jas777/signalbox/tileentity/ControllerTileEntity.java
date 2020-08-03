@@ -3,6 +3,7 @@ package com.jas777.signalbox.tileentity;
 import com.jas777.signalbox.control.ChannelMessage;
 import com.jas777.signalbox.control.ControlChannel;
 import com.jas777.signalbox.control.Controllable;
+import net.minecraft.block.BlockRedstoneWire;
 import net.minecraft.tileentity.TileEntity;
 
 import java.util.List;

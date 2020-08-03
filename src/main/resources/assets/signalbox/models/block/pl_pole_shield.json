@@ -1,0 +1,41 @@
+{
+	"credit": "Made with Blockbench",
+	"textures": {
+		"0": "signalbox:blocks/gray",
+		"particle": "signalbox:blocks/gray"
+	},
+	"elements": [
+		{
+			"from": [6.1, 8, 6.1],
+			"to": [9.9, 16, 9.9],
+			"faces": {
+				"north": {"uv": [0, 0, 3.8, 1.45455], "texture": "#0"},
+				"east": {"uv": [0, 0, 3.8, 1.45455], "texture": "#0"},
+				"south": {"uv": [0, 0, 3.8, 1.45455], "texture": "#0"},
+				"west": {"uv": [0, 0, 3.8, 1.45455], "texture": "#0"},
+				"up": {"uv": [0, 0, 3.8, 0.69091], "texture": "#0"},
+				"down": {"uv": [0, 0, 3.8, 0.69091], "texture": "#0"}
+			}
+		},
+		{
+			"from": [6.1, 0, 6.1],
+			"to": [9.9, 8, 9.9],
+			"rotation": {"angle": 0, "axis": "z", "origin": [8, 0, 8]},
+			"faces": {
+				"north": {"uv": [0, 0, 3.8, 1.45455], "texture": "#0"},
+				"east": {"uv": [0, 0, 3.8, 1.45455], "texture": "#0"},
+				"south": {"uv": [0, 0, 3.8, 1.45455], "texture": "#0"},
+				"west": {"uv": [0, 0, 3.8, 1.45455], "texture": "#0"},
+				"up": {"uv": [0, 0, 3.8, 0.69091], "texture": "#0"},
+				"down": {"uv": [0, 0, 3.8, 0.69091], "texture": "#0"}
+			}
+		}
+	],
+	"groups": [
+		{
+			"name": "pl_signal_5chambers_pole",
+			"origin": [8, -20, 8],
+			"children": [0, 1]
+		}
+	]
+}

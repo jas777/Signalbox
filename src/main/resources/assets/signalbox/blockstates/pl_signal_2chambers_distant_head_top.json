@@ -1,0 +1,38 @@
+{
+  "forge_marker": 1,
+  "defaults": {
+    "model": "signalbox:pl_distant_2chambers_head_top",
+    "textures": {
+      "lamp": "blocks/orange_light"
+    }
+  },
+  "variants": {
+    "facing": {
+      "north": {},
+      "south": {"y": 180},
+      "east":  {"y": 90},
+      "west":  {"y": -90}
+    },
+    "active": {
+      "true": {},
+      "false": {
+        "textures": {
+          "lamp": "blocks/concrete_black"
+        }
+      }
+    },
+    "signal_variant": {
+      "0": {
+        "textures": {
+          "lamp": "signalbox:blocks/orange_light"
+        }
+      },
+      "1": {
+	    "textures": {
+          "lamp": "blocks/concrete_black"
+        }
+      }
+    },
+    "inventory": [{}]
+  }
+}

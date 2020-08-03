@@ -8,6 +8,9 @@ import com.jas777.signalbox.tileentity.SignalTileEntity;
 import com.jas777.signalbox.util.interfaces.HasModel;
 import com.jas777.signalbox.util.interfaces.SignalVariants;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockRedstoneDiode;
+import net.minecraft.block.BlockRedstoneLight;
+import net.minecraft.block.BlockRedstoneWire;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.PropertyBool;
 import net.minecraft.block.properties.PropertyDirection;
@@ -145,16 +148,10 @@ public abstract class BaseSignal extends Block implements HasModel, SignalVarian
 
             assert tileEntity != null;
 
-            System.out.println(Signalbox.channelDispatcher.getChannel(1));
-
             ControlChannel channel = Signalbox.channelDispatcher.addChannel(1);
 
             tileEntity.setFrequency(1);
-            System.out.println(tileEntity);
-            ;
-            System.out.println(channel);
             tileEntity.setChannel(channel);
-            System.out.println(channel);
             tileEntity.updateSignal();
 
             tileEntity = (SignalTileEntity) worldIn.getTileEntity(pos);
